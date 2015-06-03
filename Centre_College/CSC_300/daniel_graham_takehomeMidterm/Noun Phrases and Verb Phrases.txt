@@ -1,0 +1,104 @@
+Ninja Turtle
+Turtle weapon
+11Purple enemy
+11yellow enemy
+enemy hammer
+Enemy bomb
+enemy gun
+Credits
+Health
+Kills
+12Master Splinter
+13Shredder
+Cutscene
+20Door
+202Fire
+Instructions
+Ninja Star
+20Window
+20Second level of ground
+20Pathway of level
+Throwing knife
+12Rats
+Spear
+11Orange enemy
+11White enemy
+Bullet
+Dynamite
+202Bowling Ball
+22Stairs
+22Background
+11Robot mover
+12April
+Drill vehicle
+13Rhino Boss
+Rino Boss health
+rhino boss gun
+202Fire hydrant
+22Television
+202Parking Meter
+11Green enemy
+Pizza
+12skater girl
+20wall
+20street
+201billboard
+202manhole cover
+20manhole
+13Pig boss
+pig boss gun
+pig boss health
+Enemy sword
+20pipes
+11robot dog
+2020spikey wall trap
+20aligator
+enemy bazooka
+13flying ship boss
+flying ship boss health
+20ladder
+20water in sewer
+number of players
+201car
+202one way sign
+202traffic cones
+202exploding barrel
+20 mph sign
+20elevator door
+20turtle van
+
+Verb Phrases:
+Move (up, down, left, right, jump)
+attack
+	Jump kick
+	kick
+	main attack
+	special attack
+Environment Effect Begin
+Ball roll
+Take damage
+Eat pizza
+enter a portal (sewer or door)
+Talk
+Fire Gun
+Move environment thing
+Fall down
+Play cutscene
+Burn
+Roll
+Grab and hold
+hit object
+break an object
+skateboard
+throw boomerang
+Enter the screen/level
+activate trap
+revive
+die
+throw knife
+swing sword
+shoot laser
+whip
+
+
+

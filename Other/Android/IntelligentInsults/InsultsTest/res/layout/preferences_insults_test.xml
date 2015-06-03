@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/preferences_title">
+    <PreferenceCategory
+        android:title="@string/insult_type">
+        
+	    <CheckBoxPreference   android:title="@string/nouns"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes nouns in possible insults"
+	                          android:key="Noun" />
+	    
+	    <CheckBoxPreference   android:title="@string/verbs"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes verbs in possible insults "
+	                          android:key="Verb" />
+	    
+	    <CheckBoxPreference   android:title="@string/phrases"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes other phrases in possible insults"
+	                          android:key="Phrase" />
+	    </PreferenceCategory>
+    <PreferenceCategory
+        android:title ="@string/insult_category">
+	    
+	     <PreferenceScreen
+        	android:key="button_voicemail_category_key"
+        	android:title="@string/select_insult_category"
+        	android:persistent="false">
+        	
+        	<CheckBoxPreference   android:title="@string/Shakespeare"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes Shakespearian insults."
+	                          android:key="shakespeare" />
+        	
+        	<CheckBoxPreference   android:title="@string/science"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes science insults"
+	                          android:key="science" />
+        	
+        	<CheckBoxPreference   android:title="@string/english"
+	                          android:defaultValue="true"
+	                          android:summary="This option includes english insults"
+	                          android:key="english" />
+        	
+        	<CheckBoxPreference    android:title="@string/biblical"
+        	    				android:defaultValue="true"
+        	    				android:summary="This options includes biblical insults"
+        	    				android:key="biblical"/>
+        	</PreferenceScreen>
+        	
+    </PreferenceCategory>
+    
+</PreferenceScreen>

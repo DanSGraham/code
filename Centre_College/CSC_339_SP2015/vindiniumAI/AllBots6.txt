@@ -1,0 +1,43 @@
+((d[2]!=(OH)) or ((0<len(t)) and self.pathDistanceTo(c[2].pos,t[0])==7)):m
+True:c[0].pos@66.0/123.0
+
+(((self.pathDistanceTo(OH.pos,d[1].pos)-self.pathDistanceTo(OH.pos,d[1].pos))!=(2))):m[0]
+((((3<len(m)) and self.pathDistanceTo(b[2].pos,a[3].pos)-self.pathDistanceTo(m[3],d[1].pos))!=(self.pathDistanceTo(OH.pos,a[0].pos)))):c[3].pos
+((d[0].mine_count>(c[1].mine_count))):b[2].pos
+(((2<len(t)) and (3<len(m)) and self.pathDistanceTo(t[2],m[3])!=self.pathDistanceTo(a[1].pos,c[1].pos)) or (c[3].life<(80)) and ((self.pathDistanceTo(OH.pos,b[3].pos)-self.pathDistanceTo(a[3].pos,c[3].pos))!=(1))):m
+True:b[3].pos@52.0/96.0
+
+(((self.pathDistanceTo(a[3].pos,d[1].pos)-self.pathDistanceTo(OH.pos,b[3].pos))!=(self.pathDistanceTo(b[0].pos,OH.pos)-self.pathDistanceTo(a[0].pos,OH.pos))) or (((0<len(m)) and (3<len(m)) and (0<len(t)) and self.pathDistanceTo(a[2].pos,m[0])-self.pathDistanceTo(m[3],t[0]))>(5)) or self.heroAtTavern(c[2])):m
+(((2<len(m)) and (0<len(t)) and self.pathDistanceTo(m[2],t[0])>3)):m[0]
+(((OH.life-30)!=(b[0].life-20)) and self.heroAtTavern(b[1]) or (self.pathDistanceTo(c[3].pos,a[2].pos)!=3)):a[2].pos
+(self.heroAtTavern(c[1])):t[2]
+(((a[0].mine_count-a[3].mine_count)!=(b[0].mine_count-OH.mine_count))):a[0].pos
+True:OH.pos@57.0/106.0
+
+(self.heroAtTavern(d[1]) and ((3<len(t)) and self.pathDistanceTo(b[0].pos,t[3])==self.pathDistanceTo(c[3].pos,d[2].pos))):a[0].pos
+True:m@45.0/89.0
+
+((self.pathDistanceTo(c[0].pos,OH.pos)==self.pathDistanceTo(c[0].pos,b[3].pos)) or (((0<len(m)) and (2<len(m)) and (2<len(t)) and self.pathDistanceTo(m[0],m[2])-self.pathDistanceTo(d[2].pos,b[3].pos))!=(self.pathDistanceTo(t[2],b[2].pos)-self.pathDistanceTo(c[1].pos,d[0].pos))) or self.heroAtTavern(c[2])):m[0]
+(((OH.mine_count-a[3].mine_count)==(OH.mine_count-1)) or (a[0].mine_count!=(0))):c[1].pos
+True:d[0].pos@44.0/86.0
+
+((((2<len(t)) and (0<len(t)) and self.pathDistanceTo(c[2].pos,t[2])-self.pathDistanceTo(c[3].pos,t[0]))<(8)) and self.heroAtTavern(OH)):m
+True:m[0]@40.0/71.0
+
+(self.heroAtTavern(OH) and (c[3]==(b[2]))):c[3].pos
+True:m@45.0/88.0
+
+(((OH.life-0)>(a[2].life-c[2].life)) or (self.pathDistanceTo(c[0].pos,c[2].pos)>5) and ((3<len(m)) and (2<len(m)) and (1<len(t)) and self.pathDistanceTo(c[1].pos,m[3])<self.pathDistanceTo(m[2],t[1]))):m[0]
+((b[2].mine_count==(4))):d[0].pos
+True:m[1]@12.0/24.0
+
+(self.heroAtTavern(b[3]) or (self.pathDistanceTo(b[1].pos,c[0].pos)<4)):m
+(self.heroAtTavern(c[3]) or (c[0].gold!=(b[1].gold-100))):m
+(((3<len(t)) and (2<len(m)) and self.pathDistanceTo(t[3],c[2].pos)==self.pathDistanceTo(c[2].pos,m[2]))):d[0].pos
+(self.heroAtTavern(b[3]) or self.heroAtTavern(a[3])):c[3].pos
+((a[1].mine_count==(OH.mine_count-b[2].mine_count)) or (((2<len(m)) and (3<len(m)) and self.pathDistanceTo(b[3].pos,m[2])-self.pathDistanceTo(a[1].pos,m[3]))<(2))):m
+True:m[3]@15.0/26.0
+
+(((a[2].mine_count-1)<(a[2].mine_count))):m[0]
+((self.pathDistanceTo(c[0].pos,b[1].pos)!=5) and ((OH.gold-a[1].gold)>(b[3].gold)) or ((2<len(m)) and m[2] in (a[1].mines))):t[0]
+True:a[0].pos@14.0/22.0

@@ -1,0 +1,268 @@
+List:
+  Batman
+List:
+  Three of Clubs
+  Three of Spades
+  Six of Clubs
+  Four of Diamonds
+  Eight of Hearts
+  Ace of Clubs
+  Nine of Diamonds
+  Two of Spades
+  Eight of Clubs
+  King of Diamonds
+  Seven of Clubs
+  Three of Hearts
+  Seven of Diamonds
+  Five of Clubs
+  Six of Diamonds
+  King of Clubs
+  Four of Clubs
+
+  TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Six of Hearts
+  Ace of Spades
+  Jack of Spades
+  Four of Spades
+  Five of Spades
+  Three of Diamonds
+  Ace of Diamonds
+  Eight of Spades
+  Two of Hearts
+  Ace of Hearts
+  Eight of Diamonds
+  Two of Clubs
+  Ten of Clubs
+  King of Spades
+  Ten of Hearts
+
+  Daniel Graham
+List:
+  Ten of Spades
+  Jack of Diamonds
+  Jack of Clubs
+  Queen of Hearts
+  Nine of Spades
+  Four of Hearts
+  Five of Diamonds
+  Nine of Clubs
+  Five of Hearts
+  Queen of Spades
+  Seven of Hearts
+  Ten of Diamonds
+  Jack of Hearts
+  Six of Spades
+  King of Hearts
+  Two of Diamonds
+  Seven of Spades
+
+
+List:
+  Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Five of Clubs
+  Three of Hearts
+  Ace of Clubs
+
+  TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Six of Hearts
+  Ace of Hearts
+  Jack of Spades
+  Four of Spades
+  Five of Spades
+  Three of Diamonds
+  King of Spades
+
+  Daniel Graham
+List:
+  Queen of Spades
+  King of Hearts
+  Six of Spades
+  Queen of Hearts
+  Jack of Hearts
+  Four of Hearts
+  Two of Diamonds
+
+
+Begin Game 
+
+Batman chooses the Jack of Spades
+Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Five of Clubs
+  Three of Hearts
+  Ace of Clubs
+  Jack of Spades
+
+TJ Vance chooses the Jack of Hearts
+TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Six of Hearts
+  Ace of Hearts
+  King of Spades
+  Four of Spades
+  Five of Spades
+  Three of Diamonds
+  Jack of Hearts
+
+Daniel Graham chooses the Jack of Spades
+Daniel Graham
+List:
+  Queen of Spades
+  King of Hearts
+  Six of Spades
+  Queen of Hearts
+  Two of Diamonds
+  Four of Hearts
+  Jack of Spades
+
+Batman chooses the Five of Spades
+Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Ace of Clubs
+  Three of Hearts
+
+TJ Vance chooses the Four of Hearts
+TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Six of Hearts
+  Ace of Hearts
+  King of Spades
+  Three of Diamonds
+  Jack of Hearts
+
+Daniel Graham chooses the Ace of Clubs
+Daniel Graham
+List:
+  Queen of Spades
+  King of Hearts
+  Six of Spades
+  Queen of Hearts
+  Two of Diamonds
+  Jack of Spades
+  Ace of Clubs
+
+Batman chooses the Six of Hearts
+Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Three of Hearts
+  Six of Hearts
+
+TJ Vance chooses the Queen of Spades
+TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Jack of Hearts
+  Ace of Hearts
+  King of Spades
+  Three of Diamonds
+  Queen of Spades
+
+Daniel Graham chooses the Three of Hearts
+Daniel Graham
+List:
+  Ace of Clubs
+  King of Hearts
+  Six of Spades
+  Queen of Hearts
+  Two of Diamonds
+  Jack of Spades
+  Three of Hearts
+
+Batman chooses the Ace of Hearts
+Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Six of Hearts
+  Ace of Hearts
+
+TJ Vance chooses the King of Hearts
+TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Jack of Hearts
+  Queen of Spades
+  Three of Diamonds
+
+Daniel Graham chooses the Six of Hearts
+Daniel Graham
+List:
+  Ace of Clubs
+  Three of Hearts
+  Jack of Spades
+  Queen of Hearts
+  Two of Diamonds
+
+Batman chooses the Queen of Spades
+Batman
+List:
+  Nine of Diamonds
+  Two of Spades
+  Ace of Hearts
+  Queen of Spades
+
+TJ Vance chooses the Three of Hearts
+TJ Vance
+List:
+  Nine of Hearts
+  Queen of Diamonds
+  Jack of Hearts
+
+Daniel Graham chooses the Ace of Hearts
+Daniel Graham
+List:
+  Queen of Hearts
+  Two of Diamonds
+  Jack of Spades
+
+Batman chooses the Nine of Hearts
+Batman
+List:
+  Queen of Spades
+  Two of Spades
+
+TJ Vance chooses the Queen of Hearts
+TJ Vance
+List:
+  Jack of Hearts
+
+Daniel Graham chooses the Two of Spades
+Daniel Graham
+List:
+  Jack of Spades
+
+Batman chooses the Jack of Hearts
+Batman
+List:
+  Queen of Spades
+  Jack of Hearts
+
+TJ Vance
+List:
+
+Daniel Graham chooses the Jack of Hearts
+Daniel Graham
+List:
+
+Batman is the Loser! :(

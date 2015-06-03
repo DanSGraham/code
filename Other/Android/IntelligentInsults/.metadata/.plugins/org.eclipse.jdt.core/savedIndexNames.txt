@@ -1,0 +1,10 @@
+INDEX VERSION 1.126+C:\Users\Daniel\AndroidStudioProjects\IntelligentInsults\.metadata\.plugins\org.eclipse.jdt.core
+1385446504.index
+3998311848.index
+653134071.index
+1975299293.index
+355424151.index
+3704295012.index
+1284074322.index
+3012421055.index
+919560152.index

@@ -1,0 +1,57 @@
+((self.pathDistanceTo(OH.pos, d[0].pos) < 2) and ((d[0].life) < 21) and ((OH.mines - d[0].mines) < 0) and ((OH.life) > Q):d[0].pos
+
+(((OH == b[0]) and ((b[0].mines_count - b[1].mines_count) > P) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T) and ((self.pathDistanceTo(OH.pos, d[1].pos)) > U) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]))):d[0].pos
+(((OH == b[0]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not ((b[0].mines_count - b[1].mines_count) > P) and self.heroAtTavern(d[0]):d[0].pos
+(((OH == b[0]) and ((self.pathDistanceTo(OH.pos, d[1].pos)) < Q) and ((OH.mines - d[1].mines) < R) and ((OH.life - d[1].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[1]):d[1].pos
+(((OH == b[0]) and ((self.pathDistanceTo(OH.pos, d[2].pos)) < Q) and ((OH.mines - d[2].mines) < R) and ((OH.life - d[2].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[2]):d[2].pos
+
+(((OH == b[1]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T) and ((self.pathDistanceTo(OH.pos, d[1].pos)) > U) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]))):d[0].pos
+(((OH == b[1]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]):d[0].pos
+(((OH == b[1]) and ((self.pathDistanceTo(OH.pos, d[1].pos)) < Q) and ((OH.mines - d[1].mines) < R) and ((OH.life - d[1].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[1]):d[1].pos
+(((OH == b[1]) and ((self.pathDistanceTo(OH.pos, d[2].pos)) < Q) and ((OH.mines - d[2].mines) < R) and ((OH.life - d[2].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[2]):d[2].pos
+
+(((OH == b[2]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T) and ((self.pathDistanceTo(OH.pos, d[1].pos)) > U) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]))):d[0].pos
+(((OH == b[2]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]):d[0].pos
+(((OH == b[2]) and ((self.pathDistanceTo(OH.pos, d[1].pos)) < Q) and ((OH.mines - d[1].mines) < R) and ((OH.life - d[1].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[1]):d[1].pos
+(((OH == b[2]) and ((self.pathDistanceTo(OH.pos, d[2].pos)) < Q) and ((OH.mines - d[2].mines) < R) and ((OH.life - d[2].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[2]):d[2].pos
+
+
+(((OH == b[3]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T) and ((self.pathDistanceTo(OH.pos, d[1].pos)) > U) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]))):d[0].pos
+(((OH == b[3]) and ((self.pathDistanceTo(OH.pos, d[0].pos)) < Q) and ((OH.mines - d[0].mines) < R) and ((OH.life - d[0].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[0]):d[0].pos
+(((OH == b[3]) and ((self.pathDistanceTo(OH.pos, d[1].pos)) < Q) and ((OH.mines - d[1].mines) < R) and ((OH.life - d[1].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[1]):d[1].pos
+(((OH == b[3]) and ((self.pathDistanceTo(OH.pos, d[2].pos)) < Q) and ((OH.mines - d[2].mines) < R) and ((OH.life - d[2].life) > S) and ((OH.life) > T)) and (self.pathDistanceTo(OH.pos, m[0]) > V) and not self.heroAtTavern(d[2]):d[2].pos
+
+
+(((OH.life) < Q) and (self.pathDistanceTo(d[0].pos, OH.pos) < R):t
+
+(((OH.life) < Q)):t
+
+True:m
+
+
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+True:t@253.0/797.0

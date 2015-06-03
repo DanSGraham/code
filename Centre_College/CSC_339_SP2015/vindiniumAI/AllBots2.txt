@@ -1,0 +1,73 @@
+((a[3]!=(b[3])) or ((3<len(m)) and self.pathDistanceTo(m[3],c[1].pos)!=self.pathDistanceTo(b[3].pos,OH.pos))):m
+((b[2].life<(d[2].life-0))):t
+True:c[1].pos@73.0/137.0
+
+(((3<len(t)) and (1<len(m)) and self.pathDistanceTo(t[3],m[1])==self.pathDistanceTo(a[0].pos,b[1].pos)) and self.heroAtTavern(OH) and (((2<len(t)) and self.pathDistanceTo(a[2].pos,a[1].pos)-self.pathDistanceTo(d[2].pos,t[2]))!=(5))):d[1].pos
+(self.heroAtTavern(b[2])):m
+True:m@55.0/102.0
+
+(((d[2].mine_count-1)==(OH.mine_count-4)) or self.heroAtTavern(OH) and (((3<len(m)) and (1<len(t)) and self.pathDistanceTo(c[1].pos,a[1].pos)-self.pathDistanceTo(m[3],b[2].pos))==(self.pathDistanceTo(a[0].pos,t[1])))):b[3].pos
+(((b[3].gold-700)==(b[3].gold-a[3].gold))):c[2].pos
+((((0<len(m)) and self.pathDistanceTo(d[0].pos,OH.pos)-self.pathDistanceTo(OH.pos,m[0]))==(self.pathDistanceTo(d[1].pos,c[2].pos))) or self.heroAtTavern(a[2]) or ((OH.mine_count-c[1].mine_count)<(2))):m
+(self.heroAtTavern(OH) or ((2<len(m)) and self.pathDistanceTo(a[0].pos,OH.pos)==self.pathDistanceTo(m[2],d[2].pos)) or self.heroAtTavern(c[0])):c[3].pos
+True:OH.pos@65.0/101.0
+
+((((0<len(t)) and self.pathDistanceTo(c[1].pos,t[0])-self.pathDistanceTo(a[1].pos,d[2].pos))>(10)) and (((3<len(t)) and (1<len(t)) and self.pathDistanceTo(t[3],t[1])-self.pathDistanceTo(a[1].pos,OH.pos))>(self.pathDistanceTo(OH.pos,a[2].pos)-0)) or ((OH.mine_count-3)!=(1))):m
+(((0<len(m)) and self.pathDistanceTo(d[2].pos,m[0])==self.pathDistanceTo(c[0].pos,d[0].pos)) or self.heroAtTavern(c[3])):m
+(self.heroAtTavern(b[0]) and (a[3].mine_count!=(b[0].mine_count))):d[1].pos
+True:m[2]@42.0/78.0
+
+((c[1].life>(90)) or ((self.pathDistanceTo(d[0].pos,b[3].pos)-self.pathDistanceTo(a[0].pos,d[1].pos))<(10))):m
+(((0<len(t)) and self.pathDistanceTo(a[0].pos,a[1].pos)==self.pathDistanceTo(t[0],d[0].pos)) or self.heroAtTavern(c[3]) and (a[2].gold>(OH.gold-0))):a[3].pos
+(((1<len(m)) and (0<len(m)) and self.pathDistanceTo(m[1],m[0])!=self.pathDistanceTo(OH.pos,c[0].pos)) or (self.pathDistanceTo(b[1].pos,c[0].pos)==self.pathDistanceTo(OH.pos,a[3].pos))):c[3].pos
+((self.pathDistanceTo(d[1].pos,a[1].pos)<self.pathDistanceTo(b[0].pos,a[0].pos)) and (OH.gold<(d[0].gold)) and (self.pathDistanceTo(a[2].pos,b[1].pos)!=6)):c[2].pos
+(((a[1].gold-800)==(d[1].gold)) or ((c[2].gold-900)>(d[1].gold-100)) or self.heroAtTavern(OH)):d[2].pos
+True:t[3]@31.0/62.0
+
+((self.pathDistanceTo(b[3].pos,a[2].pos)==4) or ((b[1].gold-300)>(OH.gold-0))):d[2].pos
+True:m[0]@13.0/25.0
+
+(self.heroAtTavern(a[2]) or (((1<len(t)) and self.pathDistanceTo(c[1].pos,c[2].pos)-self.pathDistanceTo(t[1],OH.pos))!=(4))):m
+(((a[0].gold-600)>(600)) and (d[2].life==(50))):b[0].pos
+(((a[2].mine_count-1)!=(d[1].mine_count-a[3].mine_count))):a[2].pos
+((self.pathDistanceTo(b[3].pos,c[2].pos)!=self.pathDistanceTo(d[1].pos,OH.pos)) or (self.pathDistanceTo(c[1].pos,d[2].pos)==10)):d[1].pos
+True:a[1].pos@17.0/33.0
+
+((((1<len(t)) and self.pathDistanceTo(OH.pos,c[1].pos)-self.pathDistanceTo(c[3].pos,t[1]))<(self.pathDistanceTo(c[1].pos,OH.pos)-1)) or (b[0].mine_count!=(OH.mine_count-3)) and (c[2].mine_count==(a[0].mine_count-2))):m
+(((OH.mine_count-0)!=(OH.mine_count-d[1].mine_count)) or self.heroAtTavern(d[0])):b[0].pos
+(((2<len(m)) and (1<len(m)) and self.pathDistanceTo(m[2],m[1])!=self.pathDistanceTo(d[1].pos,OH.pos)) and ((OH.life-20)<(10))):c[2].pos
+((((0<len(m)) and self.pathDistanceTo(a[0].pos,OH.pos)-self.pathDistanceTo(m[0],d[0].pos))==(self.pathDistanceTo(OH.pos,b[1].pos))) or self.heroAtTavern(d[1])):m[1]
+(((2<len(m)) and (1<len(m)) and self.pathDistanceTo(m[2],m[1])<7) or (OH.mine_count>(b[1].mine_count-2)) or ((3<len(t)) and self.pathDistanceTo(c[2].pos,a[1].pos)>self.pathDistanceTo(c[3].pos,t[3]))):b[3].pos
+True:m@18.0/27.0
+
+(self.heroAtTavern(OH) and (d[1]==(d[0]))):OH.pos
+(((b[3].life-b[2].life)<(d[2].life-a[0].life)) and self.heroAtTavern(c[0]) and ((self.pathDistanceTo(OH.pos,c[0].pos)-self.pathDistanceTo(OH.pos,d[2].pos))==(7))):b[2].pos
+((((0<len(t)) and self.pathDistanceTo(OH.pos,d[0].pos)-self.pathDistanceTo(t[0],b[1].pos))!=(self.pathDistanceTo(b[1].pos,c[1].pos)-5)) or self.heroAtTavern(OH)):m
+True:a[2].pos@12.0/23.0
+
+((((0<len(m)) and (0<len(m)) and (0<len(t)) and self.pathDistanceTo(a[3].pos,m[0])-self.pathDistanceTo(m[0],t[0]))!=(5)) and (((0<len(t)) and (2<len(t)) and (2<len(t)) and self.pathDistanceTo(t[0],t[2])-self.pathDistanceTo(t[2],a[0].pos))==(4))):t
+True:m[0]@15.0/28.0
+
+((b[2]==(a[3])) and self.heroAtTavern(c[1]) and (d[0]==(b[1]))):d[2].pos
+True:m@19.0/29.0
+
+((((3<len(t)) and self.pathDistanceTo(d[0].pos,b[3].pos)-self.pathDistanceTo(t[3],OH.pos))<(2))):m[0]
+(self.heroAtTavern(c[1]) and ((3<len(t)) and self.pathDistanceTo(d[1].pos,t[3])==3)):c[2].pos
+((a[0].mine_count<(a[1].mine_count-d[2].mine_count)) or (a[1].mine_count==(OH.mine_count))):a[1].pos
+(self.heroAtTavern(d[2])):c[1].pos
+(self.heroAtTavern(OH)):a[1].pos
+True:m@17.0/31.0
+
+(((1<len(m)) and m[1] in (d[1].mines)) or (self.pathDistanceTo(OH.pos,c[1].pos)!=10) or self.heroAtTavern(d[1])):m
+(self.heroAtTavern(b[3]) and ((b[1].life-OH.life)<(d[0].life-40)) or ((d[1].mine_count-0)==(b[1].mine_count-3))):t
+True:d[0].pos@15.0/30.0
+
+(((1<len(m)) and self.pathDistanceTo(c[0].pos,m[1])>5) or (a[0].life==(a[1].life-OH.life))):m
+((c[2].gold>(400)) and (OH.life==(a[3].life)) and self.heroAtTavern(a[0])):b[1].pos
+(((d[1].life-a[3].life)<(d[1].life)) or (d[0].mine_count==(OH.mine_count)) and ((self.pathDistanceTo(c[2].pos,d[1].pos)-self.pathDistanceTo(c[3].pos,a[1].pos))<(4))):m[0]
+True:d[1].pos@14.0/27.0
+
+((self.pathDistanceTo(OH.pos,c[3].pos)!=0) and (((1<len(t)) and (1<len(t)) and self.pathDistanceTo(b[2].pos,t[1])-self.pathDistanceTo(a[1].pos,t[1]))!=(self.pathDistanceTo(OH.pos,d[1].pos))) or (a[1].gold!=(OH.gold-d[0].gold))):m[0]
+((((3<len(t)) and (3<len(t)) and self.pathDistanceTo(a[0].pos,t[3])-self.pathDistanceTo(OH.pos,b[1].pos))<(self.pathDistanceTo(c[2].pos,t[3])))):m
+((b[3]==(b[1])) and (((2<len(m)) and self.pathDistanceTo(b[2].pos,m[2])-self.pathDistanceTo(a[0].pos,b[1].pos))!=(2)) and (c[1].mine_count<(OH.mine_count-0))):m
+True:OH.pos@16.0/28.0

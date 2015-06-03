@@ -1,0 +1,43 @@
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+True:t@64749.0/138559.0
+
+((OH.life < 50)):t
+True:m@62559.0/133871.0
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+(not self.heroAtTavern(OH)):c[2].pos
+True:t@55.0/162.0
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+(((3<len(t)) and (self.pathDistanceTo(OH.pos,t[3])<2))):c[1].pos
+True:t@30.0/101.0
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((d[2].life==(OH.life-a[0].life))):a[1].pos
+((OH.life > 25)):m
+True:t@61.0/200.0
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+((((d[1].gold-OH.gold)>(700)))):a[1].pos
+True:t@132.0/475.0
+
+(((OH == b[0]) and (OH.life > d[0].life))):d[0].pos
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) < 0) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0].pos
+((OH.life > 25)):m
+((a[2].life==(a[1].life)) or ((0<len(t)) and (self.pathDistanceTo(a[0].pos,t[0])>2)) or (((3<len(m)) and (self.pathDistanceTo(b[1].pos,c[2].pos)-self.pathDistanceTo(d[1].pos,c[2].pos))==(self.pathDistanceTo(c[3].pos,m[3]))))):b[1].pos
+True:t@22.0/86.0

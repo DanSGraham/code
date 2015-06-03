@@ -1,0 +1,355 @@
+package com.example.insultstest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnLongClickListener;
+import android.widget.TextView;
+
+
+public class InsultsTest extends ActionBarActivity {
+	
+	//ALL PUBLICALLY ACCESSABLE ITEMS NEED TO GO HERE
+	public List<String> selectedTypes, insultTypes;
+	public List<String[][]> selectedCategories, insultCategories;
+	
+	public void initializeLists(){
+			//INITIALIZE ALL ITEMS HERE!
+			insultTypes = new ArrayList<String>();
+			insultCategories = new ArrayList<String[][]>();
+			selectedTypes = new ArrayList<String>();
+			selectedCategories = new ArrayList<String[][]>();
+			insultTypes.add("Noun");
+			insultTypes.add("Verb");
+			insultTypes.add("Phrase");
+	
+			String[][] shakespeare = {
+					{"shakespeare"},
+					{"'He is deformed, crooked, old and sere, Ill-faced, worse bodied, shapeless everywhere;Vicious, ungentle, foolish, blunt, unkind; 	Stigmatical in making, worse in mind.' @@TAG@@-Shakespeare\nThe Comedy of Errors",
+						"'Thou'rt poison to my blood.'@@TAG@@-Shakespeare\nCymbeline",
+						"'O thou vile one!'@@TAG@@-Shakespeare\nCymbeline",
+						"'Thou incestuous, murderous, damned Dane...'@@TAG@@-Shakespeare\nHamlet", 
+						"'This sanguine coward, this bed-presser, this horseback-breaker, this huge hill of flesh!'@@TAG@@-Shakespeare\n1 Henry IV", 
+						"'Sblood, you starveling, you elf-skin, you dried neat's tongue, you bull's pizzle, you stock-fish! O for breath to utter what is like thee! you tailor's-yard, you sheath, you bowcase; you vile standing-tuck!'@@TAG@@-Shakespeare\n1 Henry IV", 
+						"'...swaggering rascal!'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'...scurvy companion.'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'...mouldy rogue...'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'...cut-purse rascal!'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'you filthy bung...'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'...bottle-ale rascal!'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'...basket-hilt stale juggler...'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'O braggart vile and damned furious wight!'@@TAG@@-Shakespeare\nHenry V", 
+						"'...cullions!'@@TAG@@-Shakespeare\nHenry V", 
+						"'You are strangely troublesome.'@@TAG@@-Shakespeare\nHenry VIII", 
+						"'You blocks, you stones, you worse than senseless things!'@@TAG@@-Shakespeare\nJulius Caesar", 
+						"'A knave; a rascal; an eater of broken meats; base, proud, shallow, beggarly, three-suited, hundred-pound, filthy, worsted-stocking knave; a lily-livered, action-taking knave, a whoreson, glass-gazing, super-serviceable finical rogue; one-trunk-inheriting slave; one that wouldst be a bawd, in way of good service, and art nothing but the composition of a knave, beggar, coward, pandar, and the son and heir of a mongrel bitch: one whom I will beat into clamorous whining, if thou deniest the least syllable of thy addition.'@@TAG@@-Shakespeare\nKing Lear", 
+						"'...dunghill!'@@TAG@@-Shakespeare\nKing John", 
+						"'You are a tedious fool'@@TAG@@-Shakespeare\nMeasure for Measure", 
+						"'O faithless coward!'@@TAG@@-Shakespeare\nMeasure for Measure", 
+						"'O dishonest wretch!'@@TAG@@-Shakespeare\nMeasure for Measure", 
+						"'A very scurvy fellow'@@TAG@@-Shakespeare\nMeasure for Measure", 
+						"'Thou art a Castilian King urinal!'@@TAG@@-Shakespeare\nThe Merry Wives of Windsor", 
+						"'Vile worm...'@@TAG@@-Shakespeare\nThe Merry Wives of Windsor", 
+						"'You juggler!'@@TAG@@-Shakespeare\nA Midsummer Night's Dream", 
+						"'You canker-blossom!'@@TAG@@-Shakespeare\nA Midsummer Night's Dream", 
+						"'Thou lump of foul deformity!'@@TAG@@-Shakespeare\nRichard III", 
+						"'A knot you are of damned bloodsuckers.'@@TAG@@-Shakespeare\nRichard III", 
+						"'...puppy-headed monster!'@@TAG@@-Shakespeare\nThe Tempest", 
+						"'Thou sodden-witted lord!...'@@TAG@@-Shakespeare\nTroilus and Cressida", 
+						"'A fusty nut with no kernel'@@TAG@@-Shakespeare\nTroilus and Cressida"
+						},
+					{"'By this wine, I'll thrust my knife in your mouldy chaps, an you play the saucy cuttle with me.'@@TAG@@-Shakespeare\n2 Henry IV", 
+						"'I had rather chop this hand off at a blow, And with the other fling it at thy face'@@TAG@@-Shakespeare\n3 Henry VI", 
+						"'I'll so maul you and your toasting-iron, That you shall think the devil is come from hell.'@@TAG@@-Shakespeare\nKing John", 
+						"'Out of my sight! thou dost infect my eyes'@@TAG@@-Shakespeare\nRichard III", 
+						"'I shall cut out your tongue.'Tis no matter, I shall speak as much wit as thou afterwards'@@TAG@@-Shakespeare\nTroilus and Cressida"
+						},
+					{"'You are not worth another word, else I'd call you knave.'@@TAG@@-Shakespeare\nAll's Well That Ends Well", 
+							"'I do desire we may be better 	strangers.'@@TAG@@-Shakespeare\nAs You Like It", 
+							"'Your abilities are too infant-like for doing much alone.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'They 	lie deadly that tell you you have good faces.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'You wear out a good wholesome forenoon in hearing a cause between an orange wife and a fosset-seller.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'More of your conversation would infect my brain.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'For such things as you, I can scarce think there's any, ye're so slight.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'The tartness of his face sours ripe grapes.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'There is no more mercy in him than there is milk in a male tiger.'@@TAG@@-Shakespeare\nCoriolanus", 
+							"'They have a plentiful lack of wit.'@@TAG@@-Shakespeare\nHamlet", 
+							"'Take you me for a sponge?'@@TAG@@-Shakespeare\nHamlet", 
+							"'Thou hast the most unsavoury similes.'@@TAG@@-Shakespeare\nHamlet", 
+							"'There’s no more faith in thee than in a stewed prune.'@@TAG@@-Shakespeare\n1 Henry IV", 
+							"'Such antics do not amount to a man.'@@TAG@@-Shakespeare\nHenry V", 
+							"'He is white-livered and red-faced.'@@TAG@@-Shakespeare\nHenry V", 
+							"'They were devils incarnate.'@@TAG@@-Shakespeare\nHenry V", 
+							"'Take her away; for she hath lived too long, To fill the world with vicious qualities.'@@TAG@@-Shakespeare\n1 Henry VI", 
+							"'Teeth hadst thou in thy head when thou wast born, To signify thou camest to bite the world.'@@TAG@@-Shakespeare\n3 Henry VI", 
+							"'I can see his pride \nPeep through each part of him.'@@TAG@@-Shakespeare\nHenry VIII", 
+							"'No man's pie is freed\nFrom his ambitious finger.'@@TAG@@-Shakespeare\nHenry VIII", 
+							"'Some report a sea-maid spawn’d him; some that he was begot between two stock-fishes. But it is certain that when he makes water his urine is congealed ice'@@TAG@@-Shakespeare\nMeasure for Measure",  
+							"'Vile worm, thou wast o’erlook’d even in thy birth.'@@TAG@@-Shakespeare\nThe Merry Wives of Windsor", 
+							"'I wonder that you will still be talking. Nobody marks you.'@@TAG@@-Shakespeare\nMuch Ado About Nothing", 
+							"'My cousin's a fool, and thou art another.'@@TAG@@-Shakespeare\nMuch Ado About Nothing", 
+							"'Heaven truly knows that thou art false as hell.'@@TAG@@-Shakespeare\nOthello", 
+							"'Thy food is such as hath been belch'd on by infected lungs.'@@TAG@@-Shakespeare\nPericles", 
+							"'Thou unfit for any place but hell'@@TAG@@-Shakespeare\nRichard III", 
+							"'I shall laugh myself to death at this puppy-headed monster!'@@TAG@@-Shakespeare\nThe Tempest", 
+							"'I think thy horse will sooner con an oration than thou learn a prayer without book'@@TAG@@-Shakespeare\nTroilus and Cressida", 
+							"'Thou sodden-witted lord! Thou hast no more brain than I have in mine elbows.'@@TAG@@-Shakespeare\nTroilus and Cressida"
+							}
+						};
+			
+			String[][] english = {
+					{"english"},
+					{"englishnoun@@TAG@@-Daniel Graham"},
+					{"englishverb@@TAG@@-Daniel Graham"},
+					{"englishphrase@@TAG@@-Daniel Graham"}
+			};
+			
+			String[][] science = {
+					{"science"},
+					{},
+					{"scienceverb@@TAG@@-Daniel Graham"},
+					{"sciencephrase@@TAG@@-Daniel Graham"}
+			};
+			
+			String[][] biblical = {
+					{"biblical"},
+					{"biblicalnoun@@TAG@@-Daniel Graham"},
+					{"biblicalverb@@TAG@@-Daniel Graham"},
+					{"biblicalphrase@@TAG@@-Daniel Graham"}
+			};
+			
+			insultCategories.add(shakespeare);
+			insultCategories.add(science);
+			insultCategories.add(english);
+			insultCategories.add(biblical);
+		}
+	
+    public static int randInt(int min, int max){
+
+        Random rand = new Random();
+
+        int randomNum = rand.nextInt((max-min) +1) + min;
+
+        return randomNum;
+    }
+    
+    public String returnInsultType(List<String> types){
+    	if (types.size() == 0){
+    		return "VOID";
+    	}
+    	int typeInt = randInt(0, types.size() - 1);
+    	return types.get(typeInt);	
+    }
+    	
+    public String[][] returnInsultCategory(String type, List<String[][]> category){
+    	if (type == "VOID"){
+    		return new String[][]{
+    				{"Please Select An Insult Type!@@TAG@@-DSG"},
+    				{"Please Select An Insult Type!@@TAG@@-DSG"},
+    				{"Please Select An Insult Type!@@TAG@@-DSG"},
+    				{"Please Select An Insult Type!@@TAG@@-DSG"}
+    		};
+    	}
+    	if (category.size() == 0){
+    		return new String[][] {
+    				{"Please Select An Insult Category!@@TAG@@-DSG"},
+    				{"Please Select An Insult Category!@@TAG@@-DSG"},
+    				{"Please Select An Insult Category!@@TAG@@-DSG"},
+    				{"Please Select An Insult Category!@@TAG@@-DSG"}
+    		};
+    	}
+    	int emptyCat = 0;
+    	
+    	for (String[][] cat: category){
+    		if ((type == "Noun" && cat[1].length == 0) || (type == "Verb" && cat[2].length == 0) || (type == "Phrase" && cat[3].length == 0)){
+    			emptyCat = emptyCat + 1;
+    		}
+    	}
+    	if(emptyCat == category.size()){
+    		return new String[][]{
+					{"No insults met your requirements! Change settings to get insults!@@TAG@@-DSG"},
+					{"No insults met your requirements! Change settings to get insults!@@TAG@@-DSG"},
+					{"No insults met your requirements! Change settings to get insults!@@TAG@@-DSG"},
+					{"No insults met your requirements! Change settings to get insults!@@TAG@@-DSG"}
+				};
+    	}
+    	while (true){
+    		int catInt = randInt(0,category.size() - 1);
+    		String[][] tempCat = category.get(catInt);
+    		if (!((type == "Noun" && tempCat[1].length == 0) || (type == "Verb" && tempCat[2].length == 0) || (type == "Phrase" && tempCat[3].length == 0))){
+    			return tempCat;
+    		}
+    	
+    		}
+    	}
+    
+    public String returnInsult(String typeIns, String[][] catIns){
+    	if (typeIns.equals("Noun")){
+    		int insIntN = randInt(0, catIns[1].length - 1);
+    		return catIns[1][insIntN];
+    	}
+    	if (typeIns.equals("Verb")){
+    		int insIntV = randInt(0, catIns[2].length - 1);
+    		return catIns[2][insIntV];
+    	}
+    	if (typeIns.equals("Phrase")){
+    		int insIntP = randInt(0, catIns[3].length - 1);
+    		return catIns[3][insIntP];
+    		}
+    	else{
+    		return "Please Select at least one Insult Type!@@TAG@@-DSG";
+    	}
+    }
+    
+    public void updateSelectedLists(){
+    	selectedTypes.clear();
+    	selectedCategories.clear();
+    	SharedPreferences allPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	for(String type : insultTypes){
+    		if (allPreferences.getBoolean(type,true)){
+    			selectedTypes.add(type);
+    		}
+    	}
+    	for (String[][] cat: insultCategories){
+    		if (allPreferences.getBoolean(cat[0][0], true)){
+    			selectedCategories.add(cat);
+    		}
+    	}
+    }
+    	/*  
+    private String selectInsultCategory(String[] arrayOfSelected){
+    	boolean whileGo = true;
+    	while (whileGo){
+    		int insultCategory = randInt(0,numCategories - 1);
+    		switch(insultCategory){
+    		case
+    		}
+    	}
+    }
+    private String selectInsultType(String[] arrayOfSelected){
+    	boolean whileGo = true
+    	while (whileGo){
+    		int insultType = randInt(0,numTypes-1);
+    		switch(insultType){
+    		case 0:
+    			if (Arrays.asList(arrayOfSelected).contains("Noun")){
+    				int insultCat = randInt(0,numCategories - 1);
+    				
+    			}
+    		}
+    	}
+    		
+    }
+ */   
+
+    //private String[] insults = {"INSULT HERE"};
+    public void openSettings(){
+    	Intent myIntent = new Intent(InsultsTest.this, OpenPreferences.class);
+    	startActivity(myIntent); 
+    }
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    	
+    	super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_insults_test);
+        TextView newInsult = (TextView)findViewById(R.id.newInsult);
+        View homepage = findViewById(R.id.insultsHomepage);
+        initializeLists();
+        updateSelectedLists();
+        //String selType = returnInsultType(selectedTypes);
+        //String[][] selCategory = returnInsultCategory(selType, selectedCategories);
+        //String insult = returnInsult(selType, selCategory);
+        
+        /*
+        boolean Nouns = allPreferences.getBoolean("nounInsults", true);
+        boolean Verbs = allPreferences.getBoolean("verbInsults", true);
+        boolean Phrases = allPreferences.getBoolean("phraseInsults", true);
+        boolean Shakespeare = allPreferences.getBoolean("shakespeareInsults", true);
+        boolean Science = allPreferences.getBoolean("scienceInsults", true);
+        boolean English = allPreferences.getBoolean("englishInsults", true);
+        if (Nouns){
+        	insultTypes.add("Noun");
+        }
+        if (Verbs){
+        	insultTypes.add("Verb");
+        }
+        if (Phrases){
+        	insultTypes.add("Phrase");
+        }
+        for (int i = 0; i < allInsultCategories.length; i++){
+        	//FIX THE FOLLOWING.
+        	if (insultCategories.get(i)){
+        		
+        	}
+        }
+        if (Science){
+        	insults = concatString(insults, science);
+        }
+        
+        if (English){
+        	insults = concatString(insults, english);
+        }
+        
+        insults = concatString(insults, someInsults);
+        
+        int firstInsultNum = randInt(0,insults.length - 1);
+        String insult = insults[firstInsultNum];
+        */
+        //newInsult.setText(insult);
+        homepage.setOnLongClickListener(new OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+            	//HERE WE USE Intent to start preference activity.
+            	openSettings();
+                return true;                         
+            }
+        });
+            
+        
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        updateSelectedLists();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.insults_test, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+        	openSettings();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    public void showInsult(View view){
+    	 String selType = returnInsultType(selectedTypes);
+         String[][] selCategory = returnInsultCategory(selType, selectedCategories);
+         String insult = returnInsult(selType, selCategory);
+    	 TextView newInsult = (TextView)findViewById(R.id.newInsult);
+    	 TextView author = (TextView)findViewById(R.id.insultAuthor);
+         newInsult.setText(insult.substring(0,insult.indexOf("@@TAG@@")));
+         author.setText(insult.substring(insult.indexOf("@@TAG@@") + 7));
+         
+    }
+    
+}

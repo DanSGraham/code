@@ -1,0 +1,24 @@
+(((OH == b[0]) and (OH.life > d[0].life))):d[0]
+((OH == b[0])):t
+(((OH.mine_count - d[0].mine_count) > 2) and (self.pathDistanceTo(OH.pos, d[0].pos) < 3) and (OH.life > d[0].life)):d[0]
+((OH.life > 25)):m
+True:t@0.0/0.0
+
+((OH.life < 50)):t
+True:m@0.0/0.0
+
+((OH.life < 25)):t
+((not self.heroAtTavern(d[0])) and (OH.life > d[0].life)):d[0].pos
+((not self.heroAtTavern(d[0])) and (OH.life > d[1].life)):d[1].pos
+((not self.heroAtTavern(d[0])) and (OH.life > d[2].life)):d[2].pos
+True:m@0.0/0.0
+
+((OH.life < 20)):t
+True:m@0.0/0.0
+
+True:t@0.0/0.0
+
+True:self.randomAction()@0.0/0.0
+
+((OH.life < 100)):self.randomAction()
+True:assert False@0.0/0.0

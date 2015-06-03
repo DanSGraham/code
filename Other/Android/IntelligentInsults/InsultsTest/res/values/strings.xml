@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="insult_type">Insult Type</string>
+    <string name="nouns">Nouns</string>
+    <string name="verbs">Verbs</string>
+    <string name="phrases">Phrases</string>
+    <string name="Shakespeare">Shakespeare</string>
+    <string name="science">Science</string>
+    <string name="english">English</string>
+    <string name="biblical">Biblical</string>
+    <string name="insult_category">Insult Categories</string>
+    <string name="select_insult_category">Select Insult Categories</string>
+	<string name="preferences_title">Preferences</string>
+    <string name="app_name">InsultsTest</string>
+    <string name="insult">Touch the Screen for an insult!</string>
+    <string name="author">Hold screen for settings.</string>
+    <string name="button_name">HEY!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

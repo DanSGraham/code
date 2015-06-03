@@ -1,0 +1,450 @@
+List:
+  Batman
+List:
+  Four of Clubs
+  Seven of Clubs
+  Three of Hearts
+  Queen of Diamonds
+  Five of Clubs
+  Seven of Hearts
+  Seven of Spades
+  Two of Clubs
+  Two of Spades
+  Four of Spades
+  Eight of Hearts
+  Jack of Clubs
+  Three of Diamonds
+
+
+Superman
+List:
+  Ten of Hearts
+  Ace of Diamonds
+  Queen of Hearts
+  Six of Spades
+  Nine of Hearts
+  Three of Clubs
+  Six of Clubs
+  Eight of Spades
+  Jack of Spades
+  Queen of Spades
+  Five of Spades
+  King of Diamonds
+  Nine of Spades
+
+  
+Spiderman
+List:
+  Ace of Hearts
+  Nine of Clubs
+  Jack of Diamonds
+  Eight of Diamonds
+  Ten of Spades
+  Nine of Diamonds
+  King of Hearts
+  Five of Hearts
+  Ten of Clubs
+  Ace of Clubs
+  Two of Hearts
+  Four of Hearts
+  King of Spades
+
+  
+Daniel Graham
+List:
+  Four of Diamonds
+  Ten of Diamonds
+  Jack of Hearts
+  King of Clubs
+  Ace of Spades
+  Six of Hearts
+  Five of Diamonds
+  Three of Spades
+  Eight of Clubs
+  Seven of Diamonds
+  Six of Diamonds
+  Two of Diamonds
+
+
+
+
+List:
+  Batman
+List:
+  Seven of Spades
+  Eight of Hearts
+  Jack of Clubs
+  Queen of Diamonds
+  Five of Clubs
+
+  
+Superman
+List:
+  Ten of Hearts
+  Ace of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+  Three of Clubs
+  King of Diamonds
+  Eight of Spades
+  Jack of Spades
+
+  
+Spiderman
+List:
+  Four of Hearts
+  Two of Hearts
+  Jack of Diamonds
+  Eight of Diamonds
+  Five of Hearts
+
+  
+Daniel Graham
+List:
+  Four of Diamonds
+  Ten of Diamonds
+  Jack of Hearts
+  King of Clubs
+  Ace of Spades
+  Two of Diamonds
+  Five of Diamonds
+  Three of Spades
+  Eight of Clubs
+  Seven of Diamonds
+
+
+
+
+Begin Game 
+
+Batman chooses the Eight of Spades
+
+Batman
+List:
+  Seven of Spades
+  Five of Clubs
+  Jack of Clubs
+  Queen of Diamonds
+
+
+Superman chooses the Eight of Diamonds
+
+Superman
+List:
+  Ten of Hearts
+  Ace of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+  Three of Clubs
+  King of Diamonds
+  Jack of Spades
+  Eight of Diamonds
+
+
+Spiderman chooses the Ace of Spades
+
+Spiderman
+List:
+  Four of Hearts
+  Two of Hearts
+  Jack of Diamonds
+  Five of Hearts
+  Ace of Spades
+
+
+Daniel Graham chooses the Seven of Spades
+
+Daniel Graham
+List:
+  Four of Diamonds
+  Ten of Diamonds
+  Jack of Hearts
+  King of Clubs
+  Eight of Clubs
+  Two of Diamonds
+  Five of Diamonds
+  Three of Spades
+
+
+Batman chooses the Ace of Diamonds
+
+Batman
+List:
+  Queen of Diamonds
+  Five of Clubs
+  Jack of Clubs
+  Ace of Diamonds
+
+
+Superman chooses the Ace of Spades
+
+Superman
+List:
+  Ten of Hearts
+  Eight of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+  Three of Clubs
+  King of Diamonds
+  Jack of Spades
+  Ace of Spades
+
+
+Spiderman chooses the King of Clubs
+
+Spiderman
+List:
+  Four of Hearts
+  Two of Hearts
+  Jack of Diamonds
+  Five of Hearts
+  King of Clubs
+
+
+Daniel Graham chooses the Jack of Clubs
+
+Daniel Graham
+List:
+  Four of Diamonds
+  Ten of Diamonds
+  Five of Diamonds
+  Three of Spades
+  Eight of Clubs
+  Two of Diamonds
+
+
+Batman chooses the Jack of Spades
+
+Batman
+List:
+  Queen of Diamonds
+  Five of Clubs
+  Ace of Diamonds
+  Jack of Spades
+
+
+Superman chooses the Four of Hearts
+
+Superman
+List:
+  Ten of Hearts
+  Eight of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+  Three of Clubs
+  King of Diamonds
+  Ace of Spades
+  Four of Hearts
+
+
+Spiderman chooses the Ten of Diamonds
+
+Spiderman
+List:
+  King of Clubs
+  Two of Hearts
+  Jack of Diamonds
+  Five of Hearts
+  Ten of Diamonds
+
+
+Daniel Graham chooses the Five of Clubs
+
+Daniel Graham
+List:
+  Four of Diamonds
+  Two of Diamonds
+  Eight of Clubs
+  Three of Spades
+
+
+Batman chooses the Ace of Spades
+
+Batman
+List:
+  Queen of Diamonds
+  Jack of Spades
+
+
+Superman chooses the King of Clubs
+
+Superman
+List:
+  Ten of Hearts
+  Eight of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+  Three of Clubs
+  Four of Hearts
+
+
+Spiderman chooses the Four of Diamonds
+
+Spiderman
+List:
+  Ten of Diamonds
+  Two of Hearts
+  Jack of Diamonds
+  Five of Hearts
+  Four of Diamonds
+
+
+Daniel Graham chooses the Jack of Spades
+
+Daniel Graham
+List:
+  Three of Spades
+  Two of Diamonds
+  Eight of Clubs
+  Jack of Spades
+
+
+Batman chooses the Four of Hearts
+
+Batman
+List:
+  Queen of Diamonds
+  Four of Hearts
+
+
+Superman chooses the Ten of Diamonds
+
+Superman
+List:
+  Three of Clubs
+  Eight of Diamonds
+  Queen of Hearts
+  Five of Spades
+  Queen of Spades
+
+
+Spiderman chooses the Jack of Spades
+
+Spiderman
+List:
+  Four of Diamonds
+  Two of Hearts
+  Five of Hearts
+
+
+Daniel Graham chooses the Four of Hearts
+
+Daniel Graham
+List:
+  Three of Spades
+  Two of Diamonds
+  Eight of Clubs
+  Four of Hearts
+
+
+Batman chooses the Eight of Diamonds
+
+Batman
+List:
+  Queen of Diamonds
+  Eight of Diamonds
+
+
+Superman chooses the Four of Diamonds
+
+Superman
+List:
+  Three of Clubs
+  Queen of Spades
+  Queen of Hearts
+  Five of Spades
+  Four of Diamonds
+
+
+Spiderman chooses the Two of Diamonds
+
+Spiderman
+List:
+  Five of Hearts
+
+
+Daniel Graham chooses the Eight of Diamonds
+
+Daniel Graham
+List:
+  Three of Spades
+  Four of Hearts
+
+
+Batman chooses the Four of Diamonds
+
+Batman
+List:
+  Queen of Diamonds
+  Four of Diamonds
+
+
+Superman chooses the Five of Hearts
+
+Superman
+List:
+  Three of Clubs
+  Queen of Spades
+  Queen of Hearts
+
+
+Spiderman
+List:
+
+
+Daniel Graham chooses the Queen of Diamonds
+
+Daniel Graham
+List:
+  Three of Spades
+  Four of Hearts
+  Queen of Diamonds
+
+
+Batman chooses the Three of Clubs
+
+Batman
+List:
+  Four of Diamonds
+  Three of Clubs
+
+
+Superman chooses the Three of Spades
+
+Superman
+List:
+  Queen of Hearts
+  Queen of Spades
+  Three of Spades
+
+
+Daniel Graham chooses the Four of Diamonds
+
+Daniel Graham
+List:
+  Queen of Diamonds
+
+
+Batman chooses the Three of Spades
+
+Batman
+List:
+
+
+Superman chooses the Queen of Diamonds
+
+Superman
+List:
+  Queen of Spades
+
+
+Daniel Graham
+List:
+
+
+Superman is the Loser! :(

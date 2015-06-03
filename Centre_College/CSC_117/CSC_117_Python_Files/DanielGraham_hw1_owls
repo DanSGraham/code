@@ -1,0 +1,130 @@
+## Author: daniel.graham@centre.edu
+## Course: CSC 117 Spring 2013
+## Assignment: Program 1 - Owl Racing
+##
+## Authorship & Assistance:
+##     - I wrote this code with no assistance other than that listed here
+##         - ** list who / what helped you, other than the instructor, 
+##             and the nature of the help
+##     - I provided assistance to the following:
+##         - ** list anyone you helped with this assignment
+##
+## Self Assessment & Caveats:
+##     - ** Explain whether you believe the program meets the
+##         assignment requirements.
+##     - ** If the answer above is not "It meets the requirements"
+##         then what are your concerns?
+##     - ** If your answer is "It meets the requirements" then list caveats:
+##         anything you think I should know you are aware of that
+##         might be a concern about your program even though it meets the
+##         requirements
+##
+## Time:
+##     - ** estimate how much time you spent at the computer working on the assignment
+##     - ** estimate how much time you spent thinking about the assignment
+##          but were not actually working on it
+##
+## Reflection:
+##     - ** list anything you believe you learned from this assignment,
+##         general feelings about the experience, concerns about the
+##         assignment or the experience, whether you enjoyed it (why),
+##         or not (why)? 
+
+a = [
+    '__________-----____                 ____-----__________ \n',
+    '\----____-------___--__---------__--___-------____----/ \n',
+    ' \//////// / / / / / \   _-------_   / \ \ \ \ \ \\\\\\\\/ \n',
+    '  \////-/-/------/_/_| /___   ___\ |_\_\------\-\-\\\\/ \n',
+    '    --//// / /  /  //|| (O)\ /(O) ||\\  \  \ \ \\\\-- \n',
+    '         ---__/  // /| \_  /V\  _/ |\ \\  \__--- \n',
+    ]
+b = [
+    '              -//  / /\_ ------- _/\ \  \\- \n',
+    '                \_/_/ /\---------/\ \_\_/ \n',
+    '                    ----\   |   /---- \n',
+    '                         | -|- | \n',
+    '                         /|\ /|\  \n'
+    ]
+#Ascii character courtesy of http://www.ascii-art.de/ascii/mno/owl.txt
+
+owlflapa=[
+    '       _____             _____  \n',
+    '      /     \ _-------_ /     \  \n',
+    '     / _|  | /___   ___\ |_\_\ \  \n' ,
+    '    / / / /|| (O)\ /(O) ||\ \ \ \  \n',
+    '   / // /  | \_  /V\  _/ | \ \ \  \  \n'
+    ]
+owlflapb = [
+    '  / -/ / / /\_ -------- _/\ \ \ \- \  \n' ,
+    ' /\_/\_/\_/\/\----------/\\_\_\_\_/\ \n',
+    '          ----\    |   /---- \n',
+    '               |  -|- | \n',
+    '                /|\ /|\  \n'
+    ]
+import time
+import random
+import string
+
+def print_spaces(numSpaces):
+    for i in range(numSpaces):
+        print "",
+
+def print_blank_lines(numBlankLines):
+    for i in range(numBlankLines):
+        print ""
+
+
+
+
+def main():
+    
+    print "Welcome to THE OWL RACE 5000"
+    time.sleep(1)
+    print "Find out whooo is the best!"
+    time.sleep(1)
+    
+    num_owls=input("How many owls will be racing today? ")
+    if num_owls < 1: #The following two lines take into account the edge values
+        print "You must submit at least one owl to race! (Nice try though)"
+        main()
+    else:
+        winning_owl=0     #These two lines set up the accumulator for the winning owl name/distance
+        winning_owl_distance=0
+
+        for i in range(num_owls): #This loop begins the action of the program.  It will run as many times as there are owls entered.
+            if i==0:
+                name_owl=raw_input("What is the first owl's name? ") #The if statement allows the two different input prompts to be different, but the resulting loop to use the same variable.
+            else:
+                name_owl=raw_input("What is the next owl's name? ")
+            distance_owl=random.randrange(1,15)
+            
+            print "Here we go!"
+            
+            for j in range (distance_owl): #This part actually prints the owl j*5 spaces past the end.
+                if j%2==0: #To simulate flapping wings, owl image a and b (open wings) had to be printed every other line with owlflap a and b printed.
+                    for k in a: #This line prints the first half of a, line by line with spaces(j*5) in front of each line.
+                        print_spaces(j*5),
+                        print k,
+                    for k in b: #This line prints the second half of b with the same amount of spaces in front.
+                        print_spaces(j*5),
+                        print k,
+                    time.sleep(.25)
+                    print_blank_lines(60)
+                elif j%2==1: #This prints the other owl image to simulate flapping. The following code's purpose is the same as the preceeding loop.
+                    for k in owlflapa:
+                        print_spaces(j*5+10),
+                        print k,
+                    for k in owlflapb:
+                        print_spaces(j*5+10),
+                        print k,
+                    time.sleep(.25)
+                    print_blank_lines(60)
+                
+            if distance_owl > winning_owl_distance: #This line stores the highest distance an owl flies in the accumulator as well as which owl did it.
+                winning_owl = name_owl
+                winning_owl_distance = distance_owl
+                
+        print "The winning owl was",winning_owl,",","with a distance of ",str(winning_owl_distance*5), "km."
+        time.sleep(3)
+        print "But then again, there were never really any 'owls', were there?"
+main()

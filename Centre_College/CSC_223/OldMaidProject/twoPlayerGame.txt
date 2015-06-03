@@ -1,0 +1,112 @@
+List:
+  Batman
+List:
+  Ten of Diamonds
+  Six of Diamonds
+  Eight of Diamonds
+  Jack of Diamonds
+  Ten of Spades
+  Ace of Spades
+  Nine of Diamonds
+  Nine of Clubs
+  Queen of Spades
+  Six of Spades
+  Two of Diamonds
+  Nine of Hearts
+  Six of Clubs
+  Five of Spades
+  Ace of Clubs
+  Three of Diamonds
+  Eight of Hearts
+  Jack of Clubs
+  Six of Hearts
+  King of Hearts
+  Three of Spades
+  Five of Diamonds
+  Nine of Spades
+  Jack of Hearts
+  Ace of Diamonds
+  Jack of Spades
+
+  
+
+Daniel Graham
+List:
+  King of Spades
+  Four of Hearts
+  Three of Hearts
+  Five of Clubs
+  Ten of Hearts
+  Five of Hearts
+  Eight of Clubs
+  Seven of Diamonds
+  Four of Diamonds
+  Ace of Hearts
+  Queen of Hearts
+  Two of Spades
+  King of Clubs
+  Eight of Spades
+  Seven of Spades
+  Queen of Diamonds
+  Two of Clubs
+  Four of Spades
+  Seven of Hearts
+  Seven of Clubs
+  King of Diamonds
+  Three of Clubs
+  Two of Hearts
+  Ten of Clubs
+  Four of Clubs
+
+
+
+
+List:
+  Batman
+List:
+  Ace of Spades
+  Two of Diamonds
+  King of Hearts
+  Queen of Spades
+
+ 
+Daniel Graham
+List:
+  King of Diamonds
+  Two of Clubs
+  Ace of Hearts
+
+
+
+
+Begin Game 
+
+
+Batman chooses the Two of Clubs
+
+Batman
+List:
+  Ace of Spades
+  Queen of Spades
+  King of Hearts
+
+
+Daniel Graham chooses the Ace of Spades
+
+Daniel Graham
+List:
+  King of Diamonds
+
+
+Batman chooses the King of Diamonds
+
+Batman
+List:
+  Queen of Spades
+
+
+Daniel Graham
+List:
+
+
+Batman is the Loser! :(
