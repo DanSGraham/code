@@ -41,9 +41,11 @@ class Neuron:
 		self.bias = 1
 		self.output_value = 0 #Output from activation function
 		self.input_stimulus = 0  #Sum of inputs multiplied by weights
+		self.input_vector = []
 		self.downstream_neurons = [] 
 		self.activation_function = None 
 		self.error = 0 
+		self.learn_rate = 1
 		self.set_activation_function_sigmoid()
 		
 		#MAY NEED UNWEIGHTED INPUTS AS WELL. MAKE SURE NOT NECESSARY.
@@ -122,9 +124,17 @@ class Neuron:
 		self.output_value = activation_value
 		return activation_val
 		
-	def adjust_weights(self, weight_adjust):
+	def adjust_weights(self):
 		#Adjusts the weights of the inputs
-		pass
+		for i in range(self.weights):
+			new_weight = self.weights[i] - (self.learn_rate * \
+				(self.input_vector[i] * self.error))
+			self.weights[i] = new_weight
+			
+	def adjust_bias(self):
+		#Adjusts the bias of the neuron
+		new_bias = self.bias - (self.learn_rate * self.error)
+		self.bias = new_bias
 		
 	def connect_neuron(self, neuron_to_connect):
 		#Connects the current neuron to the next layer. The neurons in 
