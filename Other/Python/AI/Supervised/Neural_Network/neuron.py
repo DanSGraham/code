@@ -111,7 +111,7 @@ class Neuron:
 		#(self.input_sum).
 		
 		weighted_inputs = []
-		for i in range(input_array):
+		for i in range(len(input_array)):
 			weighted_inputs.append(input_array[i] * self.weights[i])
 		
 		self.input_stimulus = sum(weighted_inputs) + self.bias
@@ -121,7 +121,7 @@ class Neuron:
 		#memory (self.output_value).
 		
 		activation_val = self.activation_function(self.input_stimulus)
-		self.output_value = activation_value
+		self.output_value = activation_val
 		return activation_val
 	
 	def send_signal(self):
@@ -131,7 +131,7 @@ class Neuron:
 		output_value = self.process_input(self.input_vector)
 		for next_neuron in self.downstream_neurons:
 			next_neuron.input_vector.append(output_value)
-		return out_value
+		return output_value
 		
 	def clear_input(self):
 		#Resets the input_vector of the neuron after a signal and 
@@ -143,7 +143,7 @@ class Neuron:
 		self.input_vector = new_input_vector
 	def adjust_weights(self):
 		#Adjusts the weights of the inputs
-		for i in range(self.weights):
+		for i in range(len(self.weights)):
 			new_weight = self.weights[i] - (self.learn_rate * \
 				(self.input_vector[i] * self.error))
 			self.weights[i] = new_weight
@@ -159,14 +159,14 @@ class Neuron:
 		
 		self.downstream_neurons.append(neuron_to_connect)
 	
-	def log_sigmoid(input_stimulus):
+	def log_sigmoid(self, input_stimulus):
 		#Returns a value from 0 to 1 and has a variable slope.
 		
 		sig_val = 	1.0/(1.0 + (math.e ** (-1 * self.sig_slope_param * \
 											input_stimulus)))
 		return sig_val
 		
-	def d_log_sigmoid(input_stimulus):
+	def d_log_sigmoid(self, input_stimulus):
 		#Returns the derivative of the log_sigmoid activation function.
 		#The derivative is used when determing the error in a neuron.
 		

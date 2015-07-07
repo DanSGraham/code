@@ -54,6 +54,7 @@ The main resource I used for this project may be found here:
 
 from neuron import *
 import math
+import random
 
 class Network:
 	#A class to specify a network of neurons
@@ -111,7 +112,7 @@ class Network:
 		self.set_quadratic_cost_function()	#Default cost fxn.
 			
 			
-	def set_quadratic_cost_function():
+	def set_quadratic_cost_function(self):
 		self.cost_function = self.quadratic_cost_function
 		self.d_cost_function = self.d_quadratic_cost_function
 		
@@ -136,14 +137,14 @@ class Network:
 			#errors to the neurons starting at the output layer.
 			
 			if i >= (len(self.neural_network) - 1): #Set error of output layer
-				for j in range(len(calc_value_vector)): #Both vectors must align.
+				for j in range(len(calc_val_vector)): #Both vectors must align.
 					curr_neuron = self.neural_network[i][j]
-					error_in_neuron = (self.d_cost_function(exp_val_vector[j], cost_val_vector[j]) \
-					* curr_neuron.d_activation_function(curr_neuron.input_stimulus)
+					error_in_neuron = (self.d_cost_function(exp_val_vector[j], calc_val_vector[j]) \
+					* curr_neuron.d_activation_function(curr_neuron.input_stimulus))
 					curr_neuron.set_error(error_in_neuron)
 					
 			else:
-				for k in range(self.neural_network[i]): #Iterate through other layers setting errors.
+				for k in range(len(self.neural_network[i])): #Iterate through other layers setting errors.
 					error_in_neuron = 0.0
 					curr_neuron = self.neural_network[i][k]
 					
@@ -212,8 +213,8 @@ class Network:
 		self.calc_error(exp_val_vector, calc_val_vector)
 		
 		#Next the weights and biases are adjusted:
-		for i in range(self.neural_network):
-			for j in range(self.neural_network[i]):
+		for i in range(len(self.neural_network)):
+			for j in range(len(self.neural_network[i])):
 				curr_neuron = self.neural_network[i][j]
 				curr_neuron.adjust_weights()
 				curr_neuron.adjust_bias()
@@ -269,7 +270,24 @@ class Network:
 			
 			
 				
-				
+def test():
+	test_input = []
+	test_output = []
+	for i in range(500):
+		in_val = random.uniform(-10, 10)
+		out_val = abs(math.sin(in_val))
+		test_input.append([in_val])
+		test_output.append([out_val])
+		
+	test_network = Network(1, 1, [10, 100, 100, 1])
+	test_network.standard_train(test_input, test_output)
+	rand_to_test = random.uniform(-10, 10)
+	print "Output of Network"
+	print test_network.evaluate_network([rand_to_test])
+	print "Correct Output"
+	print abs(math.sin(rand_to_test))
+	
+test()
 		
 		 
 						
