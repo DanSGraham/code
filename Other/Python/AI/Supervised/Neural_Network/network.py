@@ -222,11 +222,54 @@ class Network:
 	def stochastic_train(self, input_matrix, output_matrix):
 		#Uses a stochastic training method to train faster.
 		pass
-					
+	
+	def evaluate_network(self, input_vector):
+		
+		calculated_vector = []
+		#Assigns the input vector to each input neuron as the input.
+		#Then it sends the signal to the next layer in the same step.
+		for input_neuron in self.neural_network[0]:
+			input_neuron.set_input(input_vector)
+			input_neuron.send_signal()
+			
+		#Next all hidden layers send the signal
+		for j in range(1, (len(self.neural_network) - 1)):
+			for hid_neuron in self.neural_network[j]:
+				hid_neuron.send_signal()
+				
+		#Lastly, the output layer is evaluated
+		
+		for out_neuron in self.neural_network[-1]:
+			calculated_vector.append(out_neuron.send_signal())
+		
+		return calculated_vector	
+	
+	def clear_network(self):
+		#Clears the inputs currently stored in the network and prepares
+		#the network for another set of input values.
+		for neural_layer in self.neural_network:
+			for neuron in neural_layer:
+				neuron.clear_input()
+							
 	def standard_train(self, input_matrix, output_matrix):
 		#Trains the network on a set of input values and output values
 		#(input_matrix and output_matrix respectively)
 		
+		for i in range(len(input_matrix)):
+			calculated_vector = []
+			#First the network is evaluated.
+			calculated_vector = self.evaluate_network(input_matrix[i])
+			
+			#Next the weights in the network are updated.	
+			self.update_network(output_matrix[i], calculated_vector)
+			
+			#Finally, the previous input is flushed and the next input
+			#set can be trained.
+			self.clear_network()
+			
+			
+				
+				
 		
 		 
 						

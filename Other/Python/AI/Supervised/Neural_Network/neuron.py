@@ -123,7 +123,24 @@ class Neuron:
 		activation_val = self.activation_function(self.input_stimulus)
 		self.output_value = activation_value
 		return activation_val
+	
+	def send_signal(self):
+		#Processes the input stored in self.input_vector and appends
+		#the output to all downstream_neurons.input_vector. 
 		
+		output_value = self.process_input(self.input_vector)
+		for next_neuron in self.downstream_neurons:
+			next_neuron.input_vector.append(output_value)
+		return out_value
+		
+	def clear_input(self):
+		#Resets the input_vector of the neuron after a signal and 
+		#adjustment cycle.
+		self.input_vector = []
+		
+	def set_input(self, new_input_vector):
+		#sets the input vector. Useful for input neuron.
+		self.input_vector = new_input_vector
 	def adjust_weights(self):
 		#Adjusts the weights of the inputs
 		for i in range(self.weights):
