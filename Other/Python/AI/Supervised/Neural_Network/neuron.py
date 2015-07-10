@@ -44,8 +44,9 @@ class Neuron:
 		self.input_vector = []
 		self.downstream_neurons = [] 
 		self.activation_function = None 
-		self.error = 0 
-		self.learn_rate = 1
+		self.error = 0
+		self.d_bias = 0 
+		self.learn_rate = .1
 		self.set_activation_function_sigmoid()
 		
 		#MAY NEED UNWEIGHTED INPUTS AS WELL. MAKE SURE NOT NECESSARY.
@@ -64,6 +65,10 @@ class Neuron:
 		#Will do a few tests to determine best scenario.	
 		#self.weights.append(random.uniform(-1, 1))
 		
+		
+		#d_weights corresponds to change in weights.
+		self.d_weights = []
+		
 	def set_bias(self, new_bias):
 		#This method may not be necessary if it can be done with weights
 		self.bias = new_bias
@@ -81,7 +86,19 @@ class Neuron:
 		
 		self.activation_function = step_function
 		self.d_activation_function = 0 
+	
+	def clear_d_weights(self):
+		self.d_weights = []
+	
+	def add_d_weights(self, new_change_weights):
+		#Updates the change in weights.
 		
+		if len(self.d_weights) <= 0:
+			self.d_weights = new_change_weights
+		else:
+			for i in range(len(new_change_weights)):
+				self.d_weights[i] += new_change_weights[i]
+			
 	def set_activation_function_sigmoid(self, sig_slope_param = 1):
 		#Sets activation function as a sigmoid. Can adjust the 
 		#parameters of the sigmoid if necessary. This is a useful 
@@ -99,7 +116,12 @@ class Neuron:
 		#means a smaller slope.
 		
 		self.sig_slope_param = new_param
-			
+	
+	def add_error(self, error_to_add):
+		#Adds a value to the current error for use in batch and 
+		#stochastic backwards propagation.
+		self.error += error_to_add
+				
 	def process_input(self, input_array):
 		#Processes the input and determines if it will fire. 
 		#Returns the value of the activation_function
@@ -141,6 +163,8 @@ class Neuron:
 	def set_input(self, new_input_vector):
 		#sets the input vector. Useful for input neuron.
 		self.input_vector = new_input_vector
+		
+		
 	def adjust_weights(self):
 		#Adjusts the weights of the inputs
 		for i in range(len(self.weights)):
@@ -162,8 +186,7 @@ class Neuron:
 	def log_sigmoid(self, input_stimulus):
 		#Returns a value from 0 to 1 and has a variable slope.
 		
-		sig_val = 	1.0/(1.0 + (math.e ** (-1 * self.sig_slope_param * \
-											input_stimulus)))
+		sig_val = 	1.0/(1.0 + (math.e ** (-1 * input_stimulus)))
 		return sig_val
 		
 	def d_log_sigmoid(self, input_stimulus):

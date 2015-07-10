@@ -43,8 +43,8 @@ The main resource I used for this project may be found here:
 #import numpy
 
 #TODO: 
-#		0. Get weight adjustment working.
-#		0a. Test
+#		0. Add different types of backpropagation learning (stochastic, batch, online)
+#		0a. Add different cost functions
 #		1. Add matrix functionality to speed up considerably. 
 #			Current version is for learning purposes.
 #		2. Add recurrent feature.
@@ -73,7 +73,7 @@ class Network:
 								layer."""
 								
 		self.neural_network = [] 
-		self.learn_rate = 1.0 #learn_rate affect how quickly the weights
+		self.learn_rate_epsilon = 1.0 #learn_rate affect how quickly the weights
 							  #of neurons change.
 
 		self.most_recent_inputs = []
@@ -132,7 +132,7 @@ class Network:
 			#should match the indices of the expected output
 			#(exp_val_vector).
 		
-		for i in range((len(self.neural_network) - 1), 0, -1):
+		for i in range((len(self.neural_network) - 1), -1, -1):
 			#Iterates through each layer in the network and assigns
 			#errors to the neurons starting at the output layer.
 			
@@ -204,7 +204,13 @@ class Network:
 		#function for those values.
 		
 		return calc_val - exp_val
-				
+	
+	
+	def online_train(self, input_vector, output_vector, verbose =False):
+		#Takes one input and output set and trains the network on that
+		#one set. Prints the error if verbose==true.
+		network_output = self.evaluate_network(input_vector)
+					
 	def update_network(self, exp_val_vector, calc_val_vector):
 		#Updates the weights of the network based on the expectec matrix
 		#(exp_matrix) and the calculated matrix calc_matrix of values.
@@ -218,6 +224,8 @@ class Network:
 				curr_neuron = self.neural_network[i][j]
 				curr_neuron.adjust_weights()
 				curr_neuron.adjust_bias()
+				
+				
 	
 	
 	def stochastic_train(self, input_matrix, output_matrix):
@@ -251,7 +259,22 @@ class Network:
 		for neural_layer in self.neural_network:
 			for neuron in neural_layer:
 				neuron.clear_input()
-							
+	
+		
+	def batch_train(self, input_matrix, output_matrix, batch_size):
+		#Trains the network using a batch backpropagation method.
+		#Sums the errors of however many training examples present in 
+		#batch_size. Then updates the weights according to that sum.
+		change_in_weights = []
+		for i in range(0, len(input_matrix), batch_size):
+			for j in range(batch_size):
+				calculated_vector = []
+				
+				#Evaluate network
+				calculated_vector = self.evaluate_network(input_matrix[i + j])
+				
+				
+										
 	def standard_train(self, input_matrix, output_matrix):
 		#Trains the network on a set of input values and output values
 		#(input_matrix and output_matrix respectively)
@@ -273,19 +296,25 @@ class Network:
 def test():
 	test_input = []
 	test_output = []
-	for i in range(500):
-		in_val = random.uniform(-10, 10)
+	for i in range(100000):
+		in_val = random.uniform(-2, 2)
 		out_val = abs(math.sin(in_val))
 		test_input.append([in_val])
 		test_output.append([out_val])
+
 		
-	test_network = Network(1, 1, [10, 100, 100, 1])
+	test_network = Network(1, 1, [15, 50, 1])
 	test_network.standard_train(test_input, test_output)
-	rand_to_test = random.uniform(-10, 10)
-	print "Output of Network"
-	print test_network.evaluate_network([rand_to_test])
-	print "Correct Output"
-	print abs(math.sin(rand_to_test))
+	for j in range(10):
+		rand_to_test = random.uniform(-2, 2)
+		print "Output of Network"
+		out = test_network.evaluate_network([rand_to_test])
+		print out
+		test_network.clear_network()
+		print "Correct Output"
+		print abs(math.sin(rand_to_test))
+		print "Error"
+		print abs((abs(math.sin(rand_to_test))) - out[0]) / abs(math.sin(rand_to_test)) * 100
 	
 test()
 		
