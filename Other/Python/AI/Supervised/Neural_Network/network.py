@@ -55,6 +55,8 @@ The main resource I used for this project may be found here:
 from neuron import *
 import math
 import random
+import datetime
+
 
 class Network:
 	#A class to specify a network of neurons
@@ -76,7 +78,6 @@ class Network:
 		self.learn_rate_epsilon = 1.0 #learn_rate affect how quickly the weights
 							  #of neurons change.
 
-		self.most_recent_inputs = []
 		#Create initial layer.
 		layer_array = [] #Each index of the network_array is an array
 						 # built in the layer_array variable.
@@ -205,31 +206,58 @@ class Network:
 		
 		return calc_val - exp_val
 	
-	
-	def online_train(self, input_vector, output_vector, verbose =False):
-		#Takes one input and output set and trains the network on that
-		#one set. Prints the error if verbose==true.
-		network_output = self.evaluate_network(input_vector)
-					
-	def update_network(self, exp_val_vector, calc_val_vector):
-		#Updates the weights of the network based on the expectec matrix
-		#(exp_matrix) and the calculated matrix calc_matrix of values.
+	def update_d_cost_values(self, exp_val_vector, calc_val_vector):
+		#Updates the weight_cost_vector and bias cost vector based
+		#on the weights.
 		
-		#First errors are calculated:
 		self.calc_error(exp_val_vector, calc_val_vector)
 		
-		#Next the weights and biases are adjusted:
 		for i in range(len(self.neural_network)):
 			for j in range(len(self.neural_network[i])):
 				curr_neuron = self.neural_network[i][j]
-				curr_neuron.adjust_weights()
-				curr_neuron.adjust_bias()
+				curr_neuron.add_d_weight_cost_vector()
+				curr_neuron.add_d_bias_cost()
+	
+	def batch_train(self, input_matrix, output_matrix, batch_size):
+		#Trains the network using a batch backpropagation method.
+		#Sums the errors of however many training examples present in 
+		#batch_size. Then updates the weights according to that sum.
+		for i in range(0, len(input_matrix), batch_size):
+			for j in range(batch_size):
+				calc_out_vector = self.evaluate_network(input_matrix[i + j])
+				self.update_d_cost_values(output_matrix[i + j], \
+										calc_out_vector)
+				self.clear_network_inputs()
+				
+			self.update_network(1.0)
+						
+				
+	def online_train(self, input_vector, output_vector, verbose =False):
+		#Takes one input and output set and trains the network on that
+		#one set. Prints the error if verbose==true.
+		self.batch_train(input_vector, output_vector, 1)
+					
+	def update_network(self, norm_factor):
+		#Updates the weights of the network based on the slope of the 
+		#cost function and the learn rate..
+			
+		#The weights and biases are adjusted:
+		for i in range(len(self.neural_network)):
+			for j in range(len(self.neural_network[i])):
+				curr_neuron = self.neural_network[i][j]
+				curr_neuron.adjust_weights(norm_factor)
+				curr_neuron.adjust_bias(norm_factor)
+				curr_neuron.clear_d_weight_cost_vector()
+				curr_neuron.clear_d_bias_cost()
 				
 				
 	
 	
-	def stochastic_train(self, input_matrix, output_matrix):
-		#Uses a stochastic training method to train faster.
+	def stochastic_train(self, input_matrix, output_matrix, train_size, \
+							test_size, max_num_epochs, report_epochs, \
+							max_error_value):
+		#Uses a stochastic training method.
+		
 		pass
 	
 	def evaluate_network(self, input_vector):
@@ -253,50 +281,30 @@ class Network:
 		
 		return calculated_vector	
 	
-	def clear_network(self):
+	def clear_network_inputs(self):
 		#Clears the inputs currently stored in the network and prepares
 		#the network for another set of input values.
 		for neural_layer in self.neural_network:
 			for neuron in neural_layer:
 				neuron.clear_input()
-	
-		
-	def batch_train(self, input_matrix, output_matrix, batch_size):
-		#Trains the network using a batch backpropagation method.
-		#Sums the errors of however many training examples present in 
-		#batch_size. Then updates the weights according to that sum.
-		change_in_weights = []
-		for i in range(0, len(input_matrix), batch_size):
-			for j in range(batch_size):
-				calculated_vector = []
-				
-				#Evaluate network
-				calculated_vector = self.evaluate_network(input_matrix[i + j])
-				
 				
 										
 	def standard_train(self, input_matrix, output_matrix):
 		#Trains the network on a set of input values and output values
 		#(input_matrix and output_matrix respectively)
 		
-		for i in range(len(input_matrix)):
-			calculated_vector = []
-			#First the network is evaluated.
-			calculated_vector = self.evaluate_network(input_matrix[i])
+		self.online_train(input_matrix, output_matrix)
 			
-			#Next the weights in the network are updated.	
-			self.update_network(output_matrix[i], calculated_vector)
-			
-			#Finally, the previous input is flushed and the next input
-			#set can be trained.
-			self.clear_network()
-			
-			
+		
+	def save_network(self, output_file):
+		#A function to save the weights and biases of a network
+		#So the learning can be preserved.
+		network_string = str(datetime.now())
 				
 def test():
 	test_input = []
 	test_output = []
-	for i in range(100000):
+	for i in range(10000):
 		in_val = random.uniform(-2, 2)
 		out_val = abs(math.sin(in_val))
 		test_input.append([in_val])
@@ -310,7 +318,7 @@ def test():
 		print "Output of Network"
 		out = test_network.evaluate_network([rand_to_test])
 		print out
-		test_network.clear_network()
+		test_network.clear_network_inputs()
 		print "Correct Output"
 		print abs(math.sin(rand_to_test))
 		print "Error"

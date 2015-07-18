@@ -41,13 +41,14 @@ class Neuron:
 		self.bias = 1
 		self.output_value = 0 #Output from activation function
 		self.input_stimulus = 0  #Sum of inputs multiplied by weights
-		self.input_vector = []
+		self.input_vector = [] #The inputs not yet multiplied by weights
+		self.error = 0 #Unique to each training example
+		self.learn_rate = .1
 		self.downstream_neurons = [] 
 		self.activation_function = None 
-		self.error = 0
-		self.d_bias = 0 
-		self.learn_rate = .1
-		self.set_activation_function_sigmoid()
+		self.set_activation_function_sigmoid() #Default activation fxn
+		self.d_weight_cost_vector = [] #slope of the weight cost
+		self.d_bias_cost = 0 #slope of the bias cost
 		
 		#MAY NEED UNWEIGHTED INPUTS AS WELL. MAKE SURE NOT NECESSARY.
 		
@@ -60,15 +61,27 @@ class Neuron:
 		self.weights = []	
 		for i in range(number_inputs):
 			self.weights.append(random.uniform(-1, 1))
-			
-		#May instead have a bias that changes rather than weight.
-		#Will do a few tests to determine best scenario.	
-		#self.weights.append(random.uniform(-1, 1))
+				
+	def add_d_weight_cost_vector(self):
+		if len(self.d_weight_cost_vector) <= 0:
+			for i in range(len(self.input_vector)):
+				self.d_weight_cost_vector.append(self.error * \
+												self.input_vector[i])
 		
+		else:
+			for i in range(len(self.input_vector)):
+				self.d_weight_cost_vector[i] += (self.error * \
+												self.input_vector[i])
+
+	def add_d_bias_cost(self):
+		self.d_bias_cost += self.error
 		
-		#d_weights corresponds to change in weights.
-		self.d_weights = []
+	def clear_d_weight_cost_vector(self):
+		self.d_weight_cost_vector = []
 		
+	def clear_d_bias_cost(self):
+		self.d_bias_cost = 0
+					
 	def set_bias(self, new_bias):
 		#This method may not be necessary if it can be done with weights
 		self.bias = new_bias
@@ -86,18 +99,6 @@ class Neuron:
 		
 		self.activation_function = step_function
 		self.d_activation_function = 0 
-	
-	def clear_d_weights(self):
-		self.d_weights = []
-	
-	def add_d_weights(self, new_change_weights):
-		#Updates the change in weights.
-		
-		if len(self.d_weights) <= 0:
-			self.d_weights = new_change_weights
-		else:
-			for i in range(len(new_change_weights)):
-				self.d_weights[i] += new_change_weights[i]
 			
 	def set_activation_function_sigmoid(self, sig_slope_param = 1):
 		#Sets activation function as a sigmoid. Can adjust the 
@@ -116,11 +117,9 @@ class Neuron:
 		#means a smaller slope.
 		
 		self.sig_slope_param = new_param
-	
-	def add_error(self, error_to_add):
-		#Adds a value to the current error for use in batch and 
-		#stochastic backwards propagation.
-		self.error += error_to_add
+		
+	def clear_error(self):
+		self.error = 0
 				
 	def process_input(self, input_array):
 		#Processes the input and determines if it will fire. 
@@ -164,17 +163,20 @@ class Neuron:
 		#sets the input vector. Useful for input neuron.
 		self.input_vector = new_input_vector
 		
-		
-	def adjust_weights(self):
+	def adjust_weights(self, norm_factor):
 		#Adjusts the weights of the inputs
 		for i in range(len(self.weights)):
-			new_weight = self.weights[i] - (self.learn_rate * \
-				(self.input_vector[i] * self.error))
+			new_weight = self.weights[i] - \
+			((self.learn_rate / float(norm_factor)) * \
+			self.d_weight_cost_vector[i])
+			
 			self.weights[i] = new_weight
 			
-	def adjust_bias(self):
+	def adjust_bias(self, norm_factor):
 		#Adjusts the bias of the neuron
-		new_bias = self.bias - (self.learn_rate * self.error)
+		new_bias = self.bias - ((self.learn_rate / float(norm_factor)) *\
+								self.d_bias_cost)
+								
 		self.bias = new_bias
 		
 	def connect_neuron(self, neuron_to_connect):
@@ -203,6 +205,11 @@ class Neuron:
 		#offers negative values.
 		hyp_value = math.tanh(input_stimulus)
 		return hyp_value
+		
+	def d_tan_hyperbolic(input_stimulus):
+		#Returns the derivative of the tan_hyperbolic fxn.
+		d_hyp_value = (math.sech(input_stimulus)) ** 2
+		return d_hype_value
 		
 	def soft_max(input_stimulus):
 		#SoftMaxFunction is slightly different from the others.
