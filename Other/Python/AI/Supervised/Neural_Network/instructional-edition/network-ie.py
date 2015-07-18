@@ -40,6 +40,11 @@ The main resource I used for this project may be found here:
 	http://neuralnetworksanddeeplearning.com/chap1.html"""
 #By Daniel Graham
 
+## THIS IS UNOPTIMIZED!!! This neural network is part of a system that 
+# uses iteration instead of matrix operations. Matrix operations are 
+## much faster but sometimes more difficult to understand, or install 
+## modules to accomplish them. The optimized version uses numpy for 
+## matrix operations.
 
 #TODO: 
 #		0a. Add different cost functions
@@ -54,7 +59,6 @@ from neuron import *
 import math
 import random
 import datetime
-import numpy
 
 
 class Network:
