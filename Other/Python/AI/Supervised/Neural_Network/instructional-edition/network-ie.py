@@ -59,6 +59,7 @@ from neuron import *
 import math
 import random
 import datetime
+import time
 
 
 class Network:
@@ -425,7 +426,7 @@ class Network:
 					
 				else:
 					new_neuron = Neuron(num_input_vals)
-					#take input vals from teh weights of the saved value.
+					#take input vals from the weights of the saved value.
 					
 				layer_list.append(new_neuron)
 			prev_layer += 1
@@ -438,16 +439,18 @@ class Network:
 def test():
 	test_input = []
 	test_output = []
-	for i in range(10000):
+	for i in range(100000):
 		in_val = random.uniform(-2, 2)
 		out_val = abs(math.sin(in_val))
 		test_input.append([in_val])
 		test_output.append([out_val])
 
-		
+	
+	start = time.clock()	
 	test_network = Network(1, 1, [15, 50, 1])
-	test_network.stochastic_train(test_input, test_output, 1, 15, 10, 5, 1)
-	test_network.save_network("TESTFILE")
+	test_network.batch_train(test_input, test_output, 1)
+	#test_network.stochastic_train(test_input, test_output, 1, 15, 10, 5, 1)
+	#test_network.save_network("TESTFILE")
 	for j in range(10):
 		rand_to_test = random.uniform(-2, 2)
 		print "Output of Network"
@@ -458,7 +461,8 @@ def test():
 		print abs(math.sin(rand_to_test))
 		print "Error"
 		print abs((abs(math.sin(rand_to_test))) - out[0]) / abs(math.sin(rand_to_test)) * 100
-	
+	end = time.clock()
+	print "Elapsed: ", (end - start)
 test()
 		
 		 

@@ -68,8 +68,10 @@ class Neuron:
 		self.weights = []	
 		for i in range(number_inputs):
 			self.weights.append(random.uniform(-1, 1))
+			
+		self.weights = numpy.matrix(self.weights)
 	
-	def process_input(self, input_array):
+	def process_input(self, input_matrix):
 		#Processes the input and determines if it will fire. 
 		#Returns the value of the activation_function
 		#Also stores the value of the output temporarily for use 
@@ -79,11 +81,13 @@ class Neuron:
 		#all inputs are summed and stored in the neuron memory 
 		#(self.input_sum).
 		
-		weighted_inputs = []
-		for i in range(len(input_array)):
-			weighted_inputs.append(input_array[i] * self.weights[i])
+		###weighted_inputs = []
+		###for i in range(len(input_array)):
+		###	weighted_inputs.append(input_array[i] * self.weights[i])
 		
-		self.input_stimulus = sum(weighted_inputs) + self.bias
+		weighted_inputs_matrix = numpy.multiply(input_matrix, self.weights)
+		
+		self.input_stimulus = numpy.sum(weighted_inputs_matrix) + self.bias
 			
 		#Then the input stimulus is sent to the activation fxn which 
 		#generates the output of the neuron, also stored in the neuron
