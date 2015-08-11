@@ -40,13 +40,9 @@ The main resource I used for this project may be found here:
 	http://neuralnetworksanddeeplearning.com/chap1.html"""
 #By Daniel Graham
 
-
-#Error is calculating the errors in the non output layers. Need to fix
-
-
 #TODO: 
 #		1. Add matrix functionality to speed up considerably. 
-#         1a. Add training types and comment.
+#         1a. Add stochastic train.
 #		2. Add recurrent feature.
 #		3. Add genetic weight adjustment.
 #		4. Add fuzzy logic
@@ -61,8 +57,8 @@ import numpy as np
 
 
 class Network:
-	#A class to specify a network of neurons
-	def __init__(self, num_input_vals, num_poss_out, num_neurons_array, \
+	# A class to specify a network of neurons
+	def __init__(self, num_input_vals, num_poss_out, num_neurons_array,\
 					act_fxn = "sig", cost_fxn = "quad"):
 		"""Inputs:
 			num_input_vals: The number values the network will accept
@@ -75,47 +71,68 @@ class Network:
 								neurons. This network should also have 
 								the same value for num_poss_out as for
 								the number of neurons in the output 
-								layer."""
+								layer.
+		    act_fxn: The activation function of individual neurons
+		    cost_fxn: The selected cost function."""
 								
 		
 		
-		#Activation is initially set to sigmoid because this is the 
-		#most common activation function in basic networks.	
+		# Activation is initially set to sigmoid because it is the 
+		# most common activation function in basic networks.	
 		self.activation_function = None
 		if act_fxn == "sig": 
 			self.set_activation_function_sigmoid()
 		elif act_fxn == "tan":
 			self.set_activation_function_tan_hyperbolic()
 		else:
-			raise ValueError("""Your activation function parameter is 
+			raise NameError("""Your activation function parameter is 
 								missing or wrong""")
 		
 		
-		#Set cost function.
+		# Set cost function.
 		if cost_fxn == "quad":
 			self.set_quadratic_cost_function()
 		
-		#Steps: initialize arrays with layer vectors.
-
-		#Build the weights array:
+		# weights_array stores the entire network weights as np.arrays.
 		self.weights_array = []
+		
+		# bias_array stores the entire network bias
 		self.bias_array = []
+		
+		# inputs_array stores the input values for each layer of the 
+		# network and is pop. in evaluate_network.
 		self.inputs_array = []
 
-		
+		# weight_cost stores the derivative of the cost with respect
+		# to weight for the network. Populated in add_cost.
 		self.weight_cost = []
+		
+		# bias_cost stores the derivative of the cost with respect to 
+		# bias for the network. Pop in add_cost.
 		self.bias_cost = []		
 		
-		self.learn_rate = 1
+		# learn_rate is a user adjustable parameter. It should be tuned
+		# for a specific dataset to optimize learning.
+		self.learn_rate = 1.0
 		
-	
+		# weights_array is built. Each layer starts as a random number
+		# between -1 and 1 with the 0 axis corresponding to individual
+		# neurons, and the 1 axis the weights associated with each 
+		# neuron. Each neuron has a number of weights equal to the 
+		# number of neurons in an upstream layer.
 		for i in range(len(num_neurons_array)):
+			
+			# The initial layer has weights determined by num_input_vals
 			if i <= 0:
 				temp_matrix = np.random.uniform(-1, 1, (num_neurons_array[i], num_input_vals))
+				
 			else:
 				temp_matrix = np.random.uniform(-1, 1, (num_neurons_array[i], num_neurons_array[i - 1]))
+			
 			self.weights_array.append(temp_matrix)
-						
+			
+			# bias_array initially set to 1 with the same dimensionality
+			# as weights_array to align for evaluation. 			
 			self.bias_array.append(np.ones((num_neurons_array[i], 1)))
 			
 		
@@ -126,10 +143,19 @@ class Network:
 			
 	
 	def evaluate_network(self, input_vector_matrix):
-		#Assigns the input vector to each layer as the input.
-		#Then it sends the signal to the next layer in the same step.
+		# Passes input_vector_matrix through the network and returns
+		# output of last layer (outputs_array).
+		
+		# Converts the input to np.array and stores it as first value
+		# in inputs_array.
 		self.inputs_array = [np.asarray(input_vector_matrix)]
+		
+		# input_stimuli_array stores the stimulus to each neuron in a
+		# layer (weights * input to neuron + bias)
 		self.input_stimuli_array = [] 
+		
+		# Iterates through each layer in the network and evaluates the 
+		# input to that layer. Then determines the output of that layer.
 		for i in range(len(self.weights_array)):
 			weighted_inputs_array = (self.weights_array[i] * self.inputs_array[i].T)
 			weighted_array_sum = np.sum(weighted_inputs_array, axis=1, keepdims=True) \
@@ -137,43 +163,55 @@ class Network:
 			self.input_stimuli_array.append(weighted_array_sum)
 			neuron_output_array = self.activation_function(weighted_array_sum)
 			
-			#If the layer is not the output layer
+			# If the layer is not the output layer
 			if i < (len(self.weights_array) - 1):
 				self.inputs_array.append(neuron_output_array)
 				
-			#Else the output array is saved seperately.
+			# Else the output array is saved seperately.
 			else:
 				self.outputs_array = neuron_output_array
 				
 		return self.outputs_array
 		
 	def calculate_errors(self, exp_val_vector):
-		#Calculates the error in each layer of the network.
-		#Must be run after an evaluation run.
+		# Calculates the error in each layer of the network using
+		# backwards propigation.
 		
 		self.error_array = []
+		
+		# Iterates through the network calculating the error in layers
+		# determined by the exp_val_vector (expected value vector). 
+		# Error is then passed along the network until all neurons have 
+		# an error value.
 		for i in range((len(self.weights_array) - 1), -1, -1):
+			
+			# Output Layer
 			if i >= (len(self.weights_array) - 1):
-				#Output layer
 				error_in_layer = (self.d_cost_function(exp_val_vector, self.outputs_array) \
 					* self.d_activation_function(self.input_stimuli_array[-1]))
+					
 			else:
-				#This function is the problem
 				error_in_layer = np.sum((self.weights_array[i + 1].T * self.error_array[0].T), axis=1, keepdims=True)
 				error_in_layer *= self.d_activation_function(self.input_stimuli_array[i])
+			
+			# Because the backpropigation starts at the output layer, 
+			# to maintain array consistency the most recently calculated
+			# error_in_layer is added to the front of the error_array.
 			self.error_array.insert(0, error_in_layer)
 		
 		return self.error_array
 
 	def add_cost(self):
-		#Adds the cost vector to the current cost vectors. If cost vectors don't exist, they are created.
 		
+		# If no cost arrays exist they are created. (cost arrays cleared
+		# after update_network)
 		if len(self.weight_cost) <= 0:
 			self.weight_cost = []
 			self.bias_cost = []
 			for i in range(len(self.weights_array)):
 				self.weight_cost.append(self.inputs_array[i].T * self.error_array[i])
 				self.bias_cost.append(self.error_array[i])
+				
 		else:
 			for i in range(len(self.weights_array)):
 				self.weight_cost[i] += (self.inputs_array[i].T * self.error_array[i])
@@ -182,19 +220,26 @@ class Network:
 		return (self.weight_cost, self.bias_cost)
 		
 	def update_network(self, norm_factor):
-		#Updates the weights and biases of the network based on the cost arrays.
-		#This method works as expected
+		# Updates the weights and biases based on cost arrays.
+		# norm_factor averages the cost.
+
 		for i in range(len(self.weights_array)):
 			self.weights_array[i] -= ((self.learn_rate / norm_factor) * self.weight_cost[i])
 			self.bias_array[i] -= ((self.learn_rate / norm_factor) * self.bias_cost[i])
 		
+		# Cost arrays are reset here.
 		self.weight_cost = []
 		self.bias_cost = []
-			
+
+## ----------Training Methods ----------			
 	def batch_train(self, input_matrix, output_matrix, batch_size):
-		#trains the network using batch method.
-		#todo: return train error.
-		for i in range(0, len(input_matrix) - batch_size, batch_size):
+		# todo: return train error.
+		
+		# Prevents the j value from exceeding the input_matrix index.
+		upper_limit = len(input_matrix) - len(input_matrix) % batch_size
+		
+		# Iterate through input_matrix and train network in batches.
+		for i in range(0, upper_limit, batch_size):
 			for j in range(batch_size):
 				self.evaluate_network(input_matrix[i + j])
 				self.calculate_errors(output_matrix[i + j])
@@ -202,10 +247,13 @@ class Network:
 			self.update_network(1)
 	
 	def online_train(self, input_vector, output_vector):
+		# Utilizes batch_train with a batch_size of 1.
+		
 		self.batch_train([input_vector], [output_vector], 1)
 	
 	
 	def stochastic_train(self, input_matrix, output_matrix, epoch_size):
+		# Todo: write this method.
 		for i in range(0,len(input_matrix), epoch_size):
 			for j in range(epoch_size):
 				self.evaluate_network(input_matrix[i + j])
@@ -213,7 +261,8 @@ class Network:
 				self.add_cost()
 			self.update_network(epoch_size)
 			
-					
+	
+## ----------Activation Functions ----------				
 	def log_sigmoid(self, input_stimulus):
 		#Returns a value from 0 to 1 and has a variable slope.
 		
@@ -223,22 +272,22 @@ class Network:
 	def d_log_sigmoid(self, input_stimulus):
 		#Returns the derivative of the log_sigmoid activation function.
 		#The derivative is used when determing the error in a neuron.
+		
 		sig_derivative = (np.e ** input_stimulus) \
 							/ (np.square(1.0 + (np.e ** input_stimulus)))
-		
-		if np.isnan(input_stimulus[0][0]):
-			raise ValueError()
 			
 		return sig_derivative
 		
 	def tan_hyperbolic(input_stimulus):
 		# Returns a value from -1 to 1. Similar to log_sigmoid but 
 		# offers negative values.
+		
 		hyp_value = np.tanh(input_stimulus)
 		return hyp_value
 		
 	def d_tan_hyperbolic(input_stimulus):
 		# Returns the derivative of the tan_hyperbolic fxn.
+		
 		d_hyp_value = (np.sech(input_stimulus)) ** 2
 		return d_hype_value
 	
@@ -262,329 +311,32 @@ class Network:
 		self.activation_function = self.tan_hyperbolic
 		self.d_activation_function = self.d_tan_hyperbolic
 		
-	def set_sig_slope_param(self, new_param):
-		#The slope parameter determines how 'soft' or gradual the change
-		#from 0 to 1 outputs are in the function. A smaller parameter
-		#means a smaller slope.
+	
 		
-		self.sig_slope_param = new_param		
-	"""def calc_error(self, exp_val_vector, calc_val_vector):
-		#Sets the error variable of each neuron based on inputs and 
-		#outputs.
-		#Parameters:
-			#exp_val_vector is the expected output of a specific trial 
-			#in an array. If there is only one output expected for each 
-			#trial, the array will be of size 1.
-			#
-			#calc_val_vector is the calculated output of the network
-			#given in an array. The indices of the calculated output
-			#should match the indices of the expected output
-			#(exp_val_vector).
-		
-		for i in range((len(self.neural_network) - 1), -1, -1):
-			#Iterates through each layer in the network and assigns
-			#errors to the neurons starting at the output layer.
-			
-			if i >= (len(self.neural_network) - 1): #Set error of output layer
-				for j in range(len(calc_val_vector)): #Both vectors must align.
-					curr_neuron = self.neural_network[i][j]
-					error_in_neuron = (self.d_cost_function(exp_val_vector[j], calc_val_vector[j]) \
-					* curr_neuron.d_activation_function(curr_neuron.input_stimulus))
-					curr_neuron.set_error(error_in_neuron)
-					
-			else:
-				for k in range(len(self.neural_network[i])): #Iterate through other layers setting errors.
-					error_in_neuron = 0.0
-					curr_neuron = self.neural_network[i][k]
-					
-					for down_neuron in curr_neuron.downstream_neurons:
-						error_in_neuron += down_neuron.weights[k] * \
-											down_neuron.error
-											
-					error_in_neuron *= curr_neuron.d_activation_function(curr_neuron.input_stimulus)
-					
-					#For each neuron [k] in the layer [i] the weights of 
-					#the downstream neurons which have inputs directed 
-					#to [k] are multiplied by the error in the 
-					#downstream neuron, essentially passing the error 
-					#through the network. The weighted errors are summed 
-					#and then multiplied by the derivative of the 
-					#current layer activation function on the current 
-					#layer's input associated with this cost.
-					
-					curr_neuron.set_error(error_in_neuron)
-							
-	def set_quadratic_cost_function(self):
-		self.cost_function = self.quadratic_cost_function
-		self.d_cost_function = self.d_quadratic_cost_function
-		
-	def set_learn_rate(self, new_learn_rate):
-		self.learn_rate = new_learn_rate
-"""		
 ## ---------- Different Cost Functions ----------			
 		
-	def quadratic_cost_function(self, exp_value_matrix, calc_val_matrix):
-		#Both params are 2d matrices with the values in columns equal to
-		#output from a certain set of inputs. The number of columns is 
-		#equal to the number of values trained on.
+	def quadratic_cost_function(self, exp_value_array, calc_val_array):
+		# Both params are 2d arrays with the values in columns equal to
+		# output from a certain set of inputs. The number of columns is 
+		# equal to the number of values trained on. array sizes should
+		# match.
+		
 
+		num_values = exp_value_array.shape[1]
 		
-		for i in range(calc_val_martix):
-			for j in range(calc_val_matrix[i]):
-				vector_val = (exp_value_matrix[i][j] - \
-								calc_val_matrix[i][j])**2
-				if i == 0:
-					out_vector.append(vector_val)
-				else:
-					out_vector[j] += vector_val
-			
-		#out_vector is the sum for every output of every individual 
-		#neuron. Each index of the out_vector corresponds to a neuron
-		#in the output layer.
-			
-		for unaveraged_val in out_vector:
-			averaged_val = unaveraged_val / (2.0 * len(calc_val_matrix))
-			cost_vector.append(averaged_val)
-		
-		#each index of cost_vector corresponds to the same neuron as the
-		#index of the out_vector.
+		cost_vector = (np.sum(((exp_value_matrix - calc_val_matrix)**2), \
+								axis=1, keepdims=True)) / (2.0 * num_values)
 		
 		return cost_vector
 		
 	def d_quadratic_cost_function(self, exp_vector, calc_vector):
-		#Takes the expected value and the calculated value
-		#as parameters and returns the derivative of the quadratic cost
-		#function for those values.
+		# Takes the expected value and the calculated value
+		# as parameters and returns the derivative of the quadratic cost
+		# function for those values.
 		
 		return calc_vector - exp_vector
-"""	
-## ---------- Different training methods ----------
 
-	def batch_train(self, input_matrix, output_matrix, batch_size):
-		#Trains the network using a batch backpropagation method.
-		#Sums the errors of however many training examples present in 
-		#batch_size. Then updates the weights according to that sum.
-		for i in range(0, len(input_matrix), batch_size):
-			for j in range(batch_size):
-				calc_out_vector = self.evaluate_network(input_matrix[i + j])
-				self.update_d_cost_values(output_matrix[i + j], \
-										calc_out_vector)
-				self.clear_network_inputs()
-				
-			self.update_network(1.0)
-			
-	def online_train(self, input_vector, output_vector):
-		#Takes one input and output set and trains the network on that
-		#one set. Usees the batch_training function with a batch of 1.
-		self.batch_train(input_vector, output_vector, 1)
-	
-	
-	def stochastic_train(self, input_matrix, output_matrix, train_size, \
-							test_size, max_num_epochs, report_epochs, \
-							max_error_value):
-								 
-		# Trains using a stochastic method. Randomizes input to 
-		# determine an approximation of the cost function on a smaller
-		# data set. May speed up learning in some cases.							
-		error_val = 100
-		num_epochs = 0
-		while not (error_val < max_error_value or num_epochs >= max_num_epochs):
-			
-			#Trains the network.
-			for i in range(report_epochs):
-				self.stochastic_single_epoch_train(input_matrix, \
-								output_matrix, train_size)
-				num_epochs += 1
-			
-			# Network is tested and error determined. Testing is done
-			# in a very similar way to training, only without using the
-			# whole data set as the test set.
-			random_index_list = [i for i in range(len(input_matrix))]
-			random.shuffle(random_index_list)
-			train_error = 0.0
-			for j in range(test_size):
-				temp_error = 0
-				test_out = self.evaluate_network(input_matrix[random_index_list[j]])
-				self.clear_network_inputs()
-				corr_out = output_matrix[random_index_list[j]]
-				for k in range(len(test_out)):
-					temp_error += (abs(corr_out[k] - test_out[k]) / float(corr_out[k])) * 100.0
-				
-				temp_error = temp_error / len(test_out)
-				train_error += temp_error
-				
-			train_error = train_error / test_size
-			error_val = train_error
-			print "Number of Epochs: ", num_epochs
-			print "Average Error of test set: ", error_val 
-								
-								
-	def stochastic_single_epoch_train(self, input_matrix, output_matrix, train_size):
-		# Performs training through one epoch, or using the entire input
-		# matrix once.
-		
-		
-		#First the input/output matrix pairs are placed up randomly
-		#into mini-batch buckets.
-		num_buckets = len(input_matrix) / train_size
-		
-		batch_buckets = [[] for a in range(num_buckets)]
-		
-		random_index_list = [i for i in range(len(input_matrix))]
-		random.shuffle(random_index_list)
-		random_index_value = 0
-		while (random_index_value < len(random_index_list)):
-			for j in range(len(batch_buckets)):
-				if random_index_value >= len(random_index_list):
-					break
-				else:
-					batch_buckets[j].append((input_matrix[random_index_value], \
-											output_matrix[random_index_value]))
-					random_index_value += 1
-		
-				
-		#Then each batch is trained on the network.
-		for bucket in batch_buckets:
-			for j in range(len(bucket)):
-				calc_out_vector = self.evaluate_network(bucket[j][0])
-				self.update_d_cost_values(bucket[j][1], \
-									calc_out_vector)
-				self.clear_network_inputs()
-			
-			self.update_network(len(bucket))
-	
-	def standard_train(self, input_matrix, output_matrix):
-		#Trains the network on a set of input values and output values
-		#(input_matrix and output_matrix respectively)
-		
-		self.online_train(input_matrix, output_matrix)	
-						
-	def update_d_cost_values(self, exp_val_vector, calc_val_vector):
-		#Updates the weight_cost_vector and bias cost vector based
-		#on the weights.
-		
-		self.calc_error(exp_val_vector, calc_val_vector)
-		
-		for i in range(len(self.neural_network)):
-			for j in range(len(self.neural_network[i])):
-				curr_neuron = self.neural_network[i][j]
-				curr_neuron.add_d_weight_cost_vector()
-				curr_neuron.add_d_bias_cost()
-	
-	
-					
-	def update_network(self, norm_factor):
-		#Updates the weights of the network based on the slope of the 
-		#cost function and the learn rate..
-			
-		#The weights and biases are adjusted:
-		for i in range(len(self.neural_network)):
-			for j in range(len(self.neural_network[i])):
-				curr_neuron = self.neural_network[i][j]
-				curr_neuron.adjust_weights(norm_factor)
-				curr_neuron.adjust_bias(norm_factor)
-				curr_neuron.clear_d_weight_cost_vector()
-				curr_neuron.clear_d_bias_cost()
-
-					
-	def evaluate_network(self, input_vector):
-		# Evaluates the network and returns the calculated vector.
-		
-		calculated_vector = []
-		#Assigns the input vector to each input neuron as the input.
-		#Then it sends the signal to the next layer in the same step.
-		for input_neuron in self.neural_network[0]:
-			input_neuron.set_input(input_vector)
-			input_neuron.send_signal()
-			
-		#Next all hidden layers send the signal
-		for j in range(1, (len(self.neural_network) - 1)):
-			for hid_neuron in self.neural_network[j]:
-				hid_neuron.send_signal()
-				
-		#Lastly, the output layer is evaluated
-		
-		for out_neuron in self.neural_network[-1]:
-			calculated_vector.append(out_neuron.send_signal())
-		
-		return calculated_vector	
-	
-	def clear_network_inputs(self):
-		#Clears the inputs currently stored in the network and prepares
-		#the network for another set of input values.
-		for neural_layer in self.neural_network:
-			for neuron in neural_layer:
-				neuron.clear_input()
-				
-										
-
-			
-## ----------- Network storage and retrieval ----------
-		
-	def save_network(self, output_file):
-		#A function to save the weights and biases of a network
-		#So the learning can be preserved.
-		
-		#Build network header
-		network_string = str(datetime.datetime.now()) + "\n"
-		network_string += "["
-		for i in range(len(self.neural_network)):
-			if i < (len(self.neural_network) - 1):
-				network_string += (str(len(self.neural_network[i])) + ", ")
-			else:
-				network_string += (str(len(self.neural_network[i])))
-		network_string += "]\n"
-		
-		for j in range(len(self.neural_network)):
-			network_string += ("Layer " + str(j) + ":\n")
-			for neuron in self.neural_network[j]:
-				network_string += ("(" + str(neuron.weights) + ", " + str(neuron.bias) + ")\n")
-				
-		fout = open(output_file, "w")
-		fout.write(network_string)
-		fout.close()
-		
-	def load_network(self, input_file):
-		#A function to load a previously saved network.
-		fin = open(input_file, "r")
-		input_string = fin.read()
-		fin.close()
-		input_list = input_string.split("\n")
-		
-		try:
-			network_layers_list = eval(input_list[1])
-		except:
-			print "Error opening file"
-			return
-		
-		network_build = []
-		prev_layer = -1
-		for layer_size in network_layers_list:
-			layer_list = []
-			for i in range(layer_size):
-				if prev_layer != -1:
-					#If not the first layer, it creates all neurons and 
-					#Connects them to the previous layer
-					
-					new_neuron = Neuron(network_layers_list[prev_layer])
-					#The number of inputs for non-input layers is the 
-					#number of neurons in the previous layer.
-					
-					for it_neuron in network_build[prev_layer]:
-						it_neuron.connect_neuron(new_neuron)
-					#Connects the neurons in the previous layer to 
-					#the next layer.
-					
-				else:
-					new_neuron = Neuron(num_input_vals)
-					#take input vals from teh weights of the saved value.
-					
-				layer_list.append(new_neuron)
-			prev_layer += 1
-			network_build.append(layer_list)
-			
-		self.neural_network = network_build	"""
-		
+## ----------Network Storage and Loading ----------
 				
 def test():
 	test_input = []
