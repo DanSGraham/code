@@ -42,9 +42,9 @@ The main resource I used for this project may be found here:
 
 #TODO: 
 #		1. Add matrix functionality to speed up considerably. 
-#         1a. Add stochastic train.
+#         1a. Write error reporting and add save/load feature.
+#		  1b. Does the test set remain isolated from train set for stochastic? Also add exception raise if number of expected inputs incorrect.
 #		2. Add recurrent feature.
-#		3. Add genetic weight adjustment.
 #		4. Add fuzzy logic
 #		5. Other kinds of NN
 
@@ -113,7 +113,7 @@ class Network:
 		
 		# learn_rate is a user adjustable parameter. It should be tuned
 		# for a specific dataset to optimize learning.
-		self.learn_rate = 1.0
+		self.learn_rate = 0.6
 		
 		# weights_array is built. Each layer starts as a random number
 		# between -1 and 1 with the 0 axis corresponding to individual
@@ -148,7 +148,7 @@ class Network:
 		
 		# Converts the input to np.array and stores it as first value
 		# in inputs_array.
-		self.inputs_array = [np.asarray(input_vector_matrix)]
+		self.inputs_array = [np.asarray([input_vector_matrix]).T]
 		
 		# input_stimuli_array stores the stimulus to each neuron in a
 		# layer (weights * input to neuron + bias)
@@ -179,6 +179,8 @@ class Network:
 		
 		self.error_array = []
 		
+		exp_out_array = (np.asarray([exp_val_vector])).T
+		
 		# Iterates through the network calculating the error in layers
 		# determined by the exp_val_vector (expected value vector). 
 		# Error is then passed along the network until all neurons have 
@@ -187,7 +189,7 @@ class Network:
 			
 			# Output Layer
 			if i >= (len(self.weights_array) - 1):
-				error_in_layer = (self.d_cost_function(exp_val_vector, self.outputs_array) \
+				error_in_layer = (self.d_cost_function(exp_out_array, self.outputs_array) \
 					* self.d_activation_function(self.input_stimuli_array[-1]))
 					
 			else:
@@ -214,9 +216,11 @@ class Network:
 				
 		else:
 			for i in range(len(self.weights_array)):
+				
 				self.weight_cost[i] += (self.inputs_array[i].T * self.error_array[i])
-				self.bias_cost[i] += (self.error_array[i])
+				self.bias_cost[i] += self.error_array[i]
 		
+
 		return (self.weight_cost, self.bias_cost)
 		
 	def update_network(self, norm_factor):
@@ -231,37 +235,146 @@ class Network:
 		self.weight_cost = []
 		self.bias_cost = []
 
-## ----------Training Methods ----------			
-	def batch_train(self, input_matrix, output_matrix, batch_size):
-		# todo: return train error.
+## ----------Training Methods ----------		
+	
+	def batch_train(self, input_matrix, output_matrix, batch_size, \
+					verbose=False):
 		
 		# Prevents the j value from exceeding the input_matrix index.
 		upper_limit = len(input_matrix) - len(input_matrix) % batch_size
 		
+		training_error = 0.0
+		
 		# Iterate through input_matrix and train network in batches.
 		for i in range(0, upper_limit, batch_size):
+			batch_error = 0.0
 			for j in range(batch_size):
 				self.evaluate_network(input_matrix[i + j])
 				self.calculate_errors(output_matrix[i + j])
 				self.add_cost()
+				
+				# Calculates the training error per batch
+				corr_output = (np.asarray([output_matrix[i + j]])).T
+				batch_error += (np.sum(np.abs(corr_output - \
+								self.outputs_array) / corr_output) * 100.0)\
+								 / np.shape(self.outputs_array)[0]
+			
+			# Averages the batch error					 
+			batch_error = batch_error / batch_size
+			if verbose == True:
+				print batch_error, "% training error"
+			
+			training_error += batch_error		
+			
 			self.update_network(1)
-	
+		
+		# Averages the training error.
+		training_error = training_error / (upper_limit / batch_size)
+		
+		return training_error
+		
 	def online_train(self, input_vector, output_vector):
 		# Utilizes batch_train with a batch_size of 1.
 		
-		self.batch_train([input_vector], [output_vector], 1)
+		return self.batch_train([input_vector], [output_vector], 1)
 	
 	
-	def stochastic_train(self, input_matrix, output_matrix, epoch_size):
-		# Todo: write this method.
-		for i in range(0,len(input_matrix), epoch_size):
-			for j in range(epoch_size):
-				self.evaluate_network(input_matrix[i + j])
-				self.calculate_errors(output_matrix[i + j])
-				self.add_cost()
-			self.update_network(epoch_size)
+	def stochastic_train(self, input_matrix, output_matrix, train_size,\
+							test_size, max_num_epochs, report_epochs, \
+							max_error_value):
+								
+		#Error calculated incorrectly
+								 
+		# Trains using a stochastic method. Randomizes input to 
+		# determine an approximation of the cost function on a smaller
+		# data set. May speed up learning in some cases.							
+		error_val = 100.0
+		num_epochs = 0.0
+		
+		while not (error_val < max_error_value or num_epochs >= max_num_epochs):
 			
-	
+			#Trains the network.
+			train_error = 0.0
+			for i in range(report_epochs):
+				train_error += self.stochastic_single_epoch_train(input_matrix, output_matrix, train_size)
+				num_epochs += 1
+			
+			# Averages the training error over the training cycle. (maybe report after every epoch?)
+			train_error = train_error / report_epochs
+			
+			# Network is tested and error determined. Testing is done
+			# in a very similar way to training, only without using the
+			# whole data set as the test set.
+			
+			random_index_list = [i for i in range(len(input_matrix))]
+			random.shuffle(random_index_list)
+			cross_error = 0.0
+			for j in range(test_size):
+				test_out = self.evaluate_network(input_matrix[random_index_list[j]])
+				corr_out = (np.asarray(output_matrix[random_index_list[j]])).T
+				temp_error = (np.sum(np.abs(corr_out - test_out) \
+								/ corr_out) * 100.0) / np.shape(test_out)[0]
+				
+				cross_error += temp_error
+				
+			error_val = cross_error / test_size
+			print "Number of Epochs: ", num_epochs
+			print "Average Error of training set ", train_error, "%"
+			print "Average Error of test set: ", error_val, "%"
+			
+	def stochastic_single_epoch_train(self, input_matrix, output_matrix, train_size):
+		# Performs training through one epoch, or using the entire input
+		# matrix once.
+		
+		#Error calculated incorrectly
+		
+		# First the input/output matrix pairs are placed up randomly
+		# into mini-batch buckets.
+		num_buckets = len(input_matrix) / train_size
+		
+		batch_buckets = [[] for a in range(num_buckets)]
+		
+		random_index_list = [i for i in range(len(input_matrix))]
+		random.shuffle(random_index_list)
+		random_index_value = 0
+		
+		while (random_index_value < len(random_index_list)):
+			for j in range(len(batch_buckets)):
+				if random_index_value >= len(random_index_list):
+					break
+				else:
+					batch_buckets[j].append((input_matrix[random_index_value], \
+											output_matrix[random_index_value]))
+					random_index_value += 1
+		
+				
+		# Then each bucket is trained on the network.
+		training_error = 0.0
+		for bucket in batch_buckets:
+			bucket_error = 0.0
+			for j in range(len(bucket)):
+					self.evaluate_network(bucket[j][0])
+					self.calculate_errors(bucket[j][1])
+					self.add_cost()
+					
+					# Calculates and displays the training error per batch
+					corr_output = (np.asarray([bucket[j][1]]).T)
+					bucket_error += (np.sum(np.abs(corr_output - \
+									self.outputs_array) / corr_output) * 100.0)\
+									 / np.shape(self.outputs_array)[0]
+				
+			# Averages the batch error					 
+			bucket_error = bucket_error / len(bucket)
+				
+			training_error += bucket_error		
+			self.update_network(len(bucket))		
+			
+		# Averages the training error.
+		training_error = training_error / len(batch_buckets)
+			
+		return training_error
+			
+			
 ## ----------Activation Functions ----------				
 	def log_sigmoid(self, input_stimulus):
 		#Returns a value from 0 to 1 and has a variable slope.
@@ -341,29 +454,33 @@ class Network:
 def test():
 	test_input = []
 	test_output = []
-	for i in range(100000):
-		in_val = random.uniform(-2, 2)
-		out_val = abs(math.sin(in_val))
-		test_input.append([in_val])
-		test_output.append([out_val])
+	for i in range(10000):
+		in_val1 = random.uniform(-2, 2)
+		out_val1 = abs(math.sin(in_val1))
+		in_val2 = random.uniform(-2, 2)
+		out_val2 = abs(math.sin(in_val2))
+		test_input.append([in_val1, in_val2])
+		test_output.append([out_val1, out_val2])
 
 	
 	start = time.clock()	
-	test_network = Network(1, 1, [15, 50, 1])
+	test_network = Network(2, 2, [3, 5, 2])
 
-	test_network.batch_train(test_input, test_output, 1)
+	#test_network.batch_train(test_input, test_output, 5)
+	test_network.stochastic_train(test_input, test_output, 10, 200, 100, 4, 2)
 	#print test_network.weights_array
 	#print test_network.bias_array
 	#test_network.save_network("TESTFILE")
 	for j in range(10):
-		rand_to_test = random.uniform(-2, 2)
+		rand_to_test1 = random.uniform(-2, 2)
+		rand_to_test2 = random.uniform(-2, 2)
 		print "Output of Network"
-		out = test_network.evaluate_network([rand_to_test])
+		out = test_network.evaluate_network([rand_to_test1, rand_to_test2])
 		print out
 		print "Correct Output"
-		print abs(np.sin(rand_to_test))
-		print "Error"
-		print abs((abs(np.sin(rand_to_test))) - out[0]) / abs(np.sin(rand_to_test)) * 100
+		print [abs(np.sin(rand_to_test1)), abs(np.sin(rand_to_test2))]
+		#print "Error"
+		#print abs((abs(np.sin(rand_to_test))) - out[0]) / abs(np.sin(rand_to_test)) * 100
 	end = time.clock()
 	print "Elapsed: ", (end - start)
 test()

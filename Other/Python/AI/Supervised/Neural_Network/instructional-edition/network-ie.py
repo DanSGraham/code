@@ -448,8 +448,8 @@ def test():
 	
 	start = time.clock()	
 	test_network = Network(1, 1, [15, 50, 1])
-	test_network.batch_train(test_input, test_output, 1)
-	#test_network.stochastic_train(test_input, test_output, 1, 15, 10, 5, 1)
+	#test_network.batch_train(test_input, test_output, 5)
+	test_network.stochastic_train(test_input, test_output, 1, 15, 10, 5, 1)
 	#test_network.save_network("TESTFILE")
 	for j in range(10):
 		rand_to_test = random.uniform(-2, 2)
