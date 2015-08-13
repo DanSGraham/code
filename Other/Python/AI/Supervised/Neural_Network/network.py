@@ -113,7 +113,7 @@ class Network:
 		
 		# learn_rate is a user adjustable parameter. It should be tuned
 		# for a specific dataset to optimize learning.
-		self.learn_rate = 0.6
+		self.learn_rate = 1.0
 		
 		# weights_array is built. Each layer starts as a random number
 		# between -1 and 1 with the 0 axis corresponding to individual
@@ -140,6 +140,9 @@ class Network:
 	def set_quadratic_cost_function(self):
 			self.cost_function = self.quadratic_cost_function
 			self.d_cost_function = self.d_quadratic_cost_function
+			
+			#Used for saving the network
+			self.cost_string = "Cost Function: Quadratic\n"
 			
 	
 	def evaluate_network(self, input_vector_matrix):
@@ -291,12 +294,28 @@ class Network:
 		error_val = 100.0
 		num_epochs = 0.0
 		
+		#Create the data set used for testing network ability
+		random_index_list = [i for i in range(len(input_matrix))]
+		random.shuffle(random_index_list)
+		
+		test_in = []
+		test_out = []
+		
+		for i in range(test_size):
+			test_in.append(input_matrix[random_index_list[i]])
+			test_out.append(output_matrix[random_index_list[i]])
+			
+		input_matrix = [n for n in input_matrix if n not in test_in]
+		output_matrix = [m for m in output_matrix if m not in test_out]
+		
+		
 		while not (error_val < max_error_value or num_epochs >= max_num_epochs):
 			
 			#Trains the network.
 			train_error = 0.0
 			for i in range(report_epochs):
 				train_error += self.stochastic_single_epoch_train(input_matrix, output_matrix, train_size)
+				print train_error
 				num_epochs += 1
 			
 			# Averages the training error over the training cycle. (maybe report after every epoch?)
@@ -306,21 +325,22 @@ class Network:
 			# in a very similar way to training, only without using the
 			# whole data set as the test set.
 			
-			random_index_list = [i for i in range(len(input_matrix))]
-			random.shuffle(random_index_list)
 			cross_error = 0.0
 			for j in range(test_size):
-				test_out = self.evaluate_network(input_matrix[random_index_list[j]])
-				corr_out = (np.asarray(output_matrix[random_index_list[j]])).T
-				temp_error = (np.sum(np.abs(corr_out - test_out) \
-								/ corr_out) * 100.0) / np.shape(test_out)[0]
+				net_out = self.evaluate_network(test_in[j])
+				corr_out = (np.asarray([test_out[j]])).T
+				temp_error = (np.sum(np.abs(corr_out - net_out) \
+								/ corr_out) * 100.0) / np.shape(net_out)[0]
 				
 				cross_error += temp_error
-				
+			
+
 			error_val = cross_error / test_size
+			
 			print "Number of Epochs: ", num_epochs
 			print "Average Error of training set ", train_error, "%"
 			print "Average Error of test set: ", error_val, "%"
+
 			
 	def stochastic_single_epoch_train(self, input_matrix, output_matrix, train_size):
 		# Performs training through one epoch, or using the entire input
@@ -362,16 +382,14 @@ class Network:
 					bucket_error += (np.sum(np.abs(corr_output - \
 									self.outputs_array) / corr_output) * 100.0)\
 									 / np.shape(self.outputs_array)[0]
-				
+					
 			# Averages the batch error					 
 			bucket_error = bucket_error / len(bucket)
-				
-			training_error += bucket_error		
+			training_error += bucket_error	
 			self.update_network(len(bucket))		
 			
 		# Averages the training error.
-		training_error = training_error / len(batch_buckets)
-			
+		training_error = training_error / len(batch_buckets)	
 		return training_error
 			
 			
@@ -414,6 +432,9 @@ class Network:
 		self.sig_slope_param = sig_slope_param
 		self.activation_function = self.log_sigmoid
 		self.d_activation_function = self.d_log_sigmoid
+		
+		#Used for network saving
+		self.activation_string = "Activation Function: Sigmoid\nSlope Parameter: " + str(self.sig_slope_param) + "\n"
 	
 	def set_activation_function_tan_hyperbolic(self, slope_param = 1):
 		#Sets activation function as a tangent hyperbolic function.
@@ -450,6 +471,27 @@ class Network:
 		return calc_vector - exp_vector
 
 ## ----------Network Storage and Loading ----------
+
+	def save_network(self, filename):
+		network_string = ""
+		network_string += "Network Saved: " + str(datetime.datetime.now()) + "\n"
+		network_string += self.cost_string
+		network_string += self.activation_string
+		network_string += "Weights Array: \n"
+		network_string += str(self.weights_array)
+		network_string += "\nBias Array: \n"
+		network_string += str(self.bias_array)
+		fout = open(filename, "w")
+		fout.write(network_string)
+		fout.close()
+		return True
+		
+		
+	def load_network(self, network_file):
+		default_network = Network(1, 1, [1,1,1])
+		fin = open(network_file, 'r')
+		fin_str = fin.read()
+		print fin_str
 				
 def test():
 	test_input = []
@@ -464,7 +506,10 @@ def test():
 
 	
 	start = time.clock()	
-	test_network = Network(2, 2, [3, 5, 2])
+	test_network = Network(2, 2, [15, 50, 2])
+	test_network.save_network("HELLO.txt")
+	test_network.load_network("HELLO.txt")
+	raise ValueError()
 
 	#test_network.batch_train(test_input, test_output, 5)
 	test_network.stochastic_train(test_input, test_output, 10, 200, 100, 4, 2)
