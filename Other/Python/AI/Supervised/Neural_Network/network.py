@@ -42,7 +42,7 @@ The main resource I used for this project may be found here:
 
 #TODO: 
 #		1. Add matrix functionality to speed up considerably. 
-#         1a. Write error reporting and add save/load feature.
+#         1a. Add save/load feature.
 #		  1b. Does the test set remain isolated from train set for stochastic? Also add exception raise if number of expected inputs incorrect.
 #		2. Add recurrent feature.
 #		4. Add fuzzy logic

@@ -1,0 +1,235 @@
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+#include "TEST_LIB"
+
+
+/* Tests the functions created in bases.c */
+
+int testIntToChar(){
+    assert(intToChar(4) == '4');
+    assert(intToChar(-20) == ' ');
+    assert(intToChar(10) == 'A');
+    assert(intToChar(13) == 'D');
+    assert(intToChar(15) == 'F');
+    assert(intToChar(0) == '0');
+    assert(intToChar(20) == ' ');
+    assert(intToChar(16) == ' ');
+    assert(intToChar(-1) == ' ');
+    assert(intToChar(-3) == ' ');
+    assert(intToChar(-300) == ' ');
+    assert(intToChar(300) == ' ');
+    printf("intToChar tests pass :)\n");
+    return 1;
+}
+
+int testCharToInt(){
+    assert(charToInt('0') == 0);
+    assert(charToInt('A') == 10);
+    assert(charToInt('F') == 15);
+    assert(charToInt('7') == 7);
+    assert(charToInt('/') == -1);
+    assert(charToInt('G') == -1);
+    assert(charToInt(' ') == -1);
+    assert(charToInt(':') == -1);
+    assert(charToInt(';') == -1);
+    assert(charToInt('@') == -1);
+    assert(charToInt('?') == -1);
+    assert(charToInt('=') == -1);
+    printf("charToInt tests pass :)\n");
+    return 1;
+}
+
+int testBase10ToBaseAny(){
+    int startingNum;
+    int baseConversion;
+    char outputNum[100];
+    char* corrOutput;
+
+
+    startingNum = 0;
+    corrOutput = "0";
+    for(int i = 2; i <= 16; i = i + 1){
+        base10ToBaseAny(startingNum, i, outputNum);
+        assert(strcmp(outputNum, corrOutput) == 0);
+    }
+    
+    startingNum = 1;
+    corrOutput = "1";
+    for(int i = 2; i <= 16; i = i + 1){
+        base10ToBaseAny(startingNum, i, outputNum);
+        assert(strcmp(outputNum, corrOutput) == 0);
+    }
+
+    startingNum = 2;
+    corrOutput = "10";
+    base10ToBaseAny(startingNum, 2, outputNum);
+    assert(strcmp(outputNum, corrOutput) == 0);
+
+    corrOutput = "2";
+    for(int i = 3; i <= 16; i = i + 1){
+        base10ToBaseAny(startingNum, i, outputNum);
+        assert(strcmp(outputNum, corrOutput) == 0);
+    }
+     
+    startingNum = 45;
+
+    baseConversion = 2;
+    corrOutput = "101101";
+    base10ToBaseAny(startingNum, baseConversion, outputNum);
+    assert(strcmp(outputNum, corrOutput) == 0);
+
+    baseConversion = 7;
+    corrOutput = "63";
+    base10ToBaseAny(startingNum, baseConversion, outputNum);
+    assert(strcmp(outputNum, corrOutput) == 0);
+
+    baseConversion = 16;
+    corrOutput = "2D";
+    base10ToBaseAny(startingNum, baseConversion, outputNum);
+    assert(strcmp(outputNum, corrOutput) == 0);
+
+    baseConversion = 10;
+    corrOutput = "45";
+    base10ToBaseAny(startingNum, baseConversion, outputNum);
+    assert(strcmp(outputNum, corrOutput) == 0);
+
+    printf("Test Base 10 to Base Any Pass");
+    return 1;
+}
+
+int testBaseAnyToBase10(){
+    
+    int testBase;
+    char* num;
+    int numLen;
+    int corrOut;
+
+    num = "0";
+    numLen = 1;
+    corrOut = 0;
+    for(int i = 2; i <= 16; i = i + 1){
+        assert(baseAnyToBase10(i, num, numLen) == corrOut);
+    }
+
+    num = "0";
+    numLen = 1;
+    corrOut = 0;
+    for(int i = 2; i <= 16; i = i + 1){
+        assert(baseAnyToBase10(i, num, numLen) == corrOut);
+    }
+
+    num = "1010101";
+    numLen = 7;
+    assert(baseAnyToBase10(2, num, numLen) == 85);
+
+    assert(baseAnyToBase10(3, num, numLen) == 820);
+
+    assert(baseAnyToBase10(6, num, numLen) == 47989);
+
+    num = "AAD";
+    numLen = 3;
+    assert(baseAnyToBase10(14, num, numLen) == 2113);
+
+    assert(baseAnyToBase10(16, num, numLen) == 2733);
+
+    num = "F0";
+    numLen = 2;
+    assert(baseAnyToBase10(16, num, numLen) == 240);
+
+    
+    return 1;
+}
+
+int testBaseAnyToBaseAny(){
+    int inBase;
+    int outBase;
+    char* inputNum;
+    char outNum[100];
+    char* temp;
+    int numLen;
+    char* corrOut;
+
+    inputNum = "5A";
+    numLen = 2;
+
+    inBase = 11;
+
+
+    outBase = 2;
+    corrOut = "1000001";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum); 
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+    outBase = 5;
+    corrOut = "230";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+    outBase = 11;
+    corrOut = "5A";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+    
+    outBase = 16;
+    corrOut = "41";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+
+
+    inputNum = "5A44D";
+    numLen = 5;
+
+    inBase = 16;
+
+
+    outBase = 2;
+    corrOut = "1011010010001001101";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum); 
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+    outBase = 5;
+    corrOut = "43312431";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+    outBase = 11;
+    corrOut = "232879";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+    
+    outBase = 16;
+    corrOut = "5A44D";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+
+    inBase = 16;
+    outBase = 16;
+    corrOut = "5A44D";
+    baseAnyToBaseAny(inBase, inputNum, numLen, outBase, outNum);
+    temp = &outNum[0];
+    assert(strcmp(temp, corrOut) == 0);
+
+    printf("Base any to base any pass :)");
+    return 1;
+}
+    
+
+int main(){
+    testIntToChar();
+    testCharToInt();
+    testBase10ToBaseAny();
+    testBaseAnyToBase10();
+    testBaseAnyToBaseAny();
+    return 0;
+}

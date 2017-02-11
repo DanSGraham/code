@@ -1,0 +1,5 @@
+Create Slater Determinant
+Determine trial wavefunction (single electron wf)
+write fock operator
+Determine adjustment algorithm to correct wf
+
