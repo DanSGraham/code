@@ -1,1 +1,32 @@
 System Calls: http://syscalls.kernelgrok.com/
+
+Register Names and Values:
+
+Data Registers:
+eax, ebx, ecx edx are for general data manipulation
+AX is the primary accumulator
+BX is the base register
+CX is the count register (for loop counts)
+DX is the data register, similar to AX can be used as input/output for most arithmetic instructions
+
+Pointer Registers:
+EIP offset address of instruction to be executed
+ESP offset of the stack
+BP location of parameter variable
+
+Index Registers:
+ESI: source index for string operations
+EDI Destiination index for string operations
+
+Control Registers:
+Flags?:
+Bit number corresponds to specific flags.
+
+Segment Registers:
+
+CS stores where the starting address of the code section is
+DS stores where the starting address of the data section is
+SS stores where the starting address of the stack section is
+
+ES, FS, and GS also provide addiional sectoins for storing data
+
