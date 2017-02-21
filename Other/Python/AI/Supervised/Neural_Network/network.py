@@ -39,7 +39,15 @@ network to improve over time.
 The main resource I used for this project may be found here:
 	http://neuralnetworksanddeeplearning.com/chap1.html"""
 #By Daniel Graham
-
+#Types of Neural Networks:
+#Feed Forward
+#Radial Basis Function
+#Recurrant Network
+#   LOTS WITHIN THIS FRAMEWORK
+#Modular
+#Neuro-fuzzy networks
+#See the wiki article about NNs
+#Growth NN.
 #TODO: 
 #		1. Add matrix functionality to speed up considerably. 
 #         1a. Add save/load feature.
@@ -58,24 +66,23 @@ import numpy as np
 
 class Network:
 	# A class to specify a network of neurons
-	def __init__(self, num_input_vals, num_poss_out, num_neurons_array,\
-					act_fxn = "sig", cost_fxn = "quad"):
+	def __init__(self, num_input_vals, num__out, num_hidden_layers,\
+                         num_neuron_array, act_fxn = "sig", cost_fxn = "quad"):
 		"""Inputs:
 			num_input_vals: The number values the network will accept
 			num_poss_out: The number of possible output values
 			num_neurons_array: an array where each layer of the network
-								has the number of neurons specified.
-								for example: [3, 4, 4, 2]. This network
-								has 3 input neurons, two hidden layers
-								with 4 neurons each, and 2 output layer
-								neurons. This network should also have 
-								the same value for num_poss_out as for
-								the number of neurons in the output 
-								layer.
-		    act_fxn: The activation function of individual neurons
-		    cost_fxn: The selected cost function."""
+			                   has the number of neurons specified.
+					   for example: [3, 4, 4, 2]. This network
+					   has 3 input neurons, two hidden layers
+		                           with 4 neurons each, and 2 output layer
+					   neurons. This network should also have 
+					   the same value for num_poss_out as for
+					   the number of neurons in the output 
+					   layer.
+		        act_fxn: The activation function of individual neurons
+		        cost_fxn: The selected cost function."""
 								
-		
 		
 		# Activation is initially set to sigmoid because it is the 
 		# most common activation function in basic networks.	

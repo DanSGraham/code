@@ -1,0 +1,13 @@
+{
+    "_comment": "input file for creating a new NN",
+    "networkClass": "Feedforward",
+    "networkType": "MLPercep",
+    "networkProperties" : {
+        "sizeInitialLayer" : 10,
+        "numberHiddenLayers": 1,
+        "hiddenLayerSizes": [5],
+        "normalizeInputs": true,
+        "numberInputs" : 10,
+        "numberOutputs" : 2
+    }
+}
