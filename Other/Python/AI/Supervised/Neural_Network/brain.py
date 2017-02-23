@@ -9,6 +9,10 @@ import sys
 import json
 
 
+#TODO: 
+#Code various training regimes
+#Test SLPercep and MLPercep
+
 class Brain:
     'A generic neural network object'
 
@@ -24,10 +28,19 @@ class Brain:
 
     def ponder(self, trainingSet):
         """Trains a brain on the training set"""
+        inVal = trainingSet[0]
+        outVal = trainingSet[1]
+        print self.network.calculate(inVal)
+        for i in range(1000):
+            wVal, bVal = self.network.correction(outVal)
+            self.network.adjustment(wVal, bVal)
+            self.network.calculate(inVal)
+
+        print self.network.calculate(inVal)
 
     def predict(self, inputSet):
         """Predicts an output based on the trained values"""
-        self.network.calculate(inputSet)
+        return self.network.calculate(inputSet)
 
     def evolve(self):
         """Grows new neurons and links. Trims trivial neurons and links"""
@@ -44,7 +57,10 @@ class Brain:
 def main(argv):
     with open(argv[0]) as json_data:
         test_brain = Brain(json_data)
-#    test_brain.predict(np.array([2,4,6,3,1,8,5,7,9,0]))
+    test_brain.predict(np.array([2,4]))
+    test_brain.ponder((np.array([2,4]), np.array([.5,.25])))
+    print "EXPECTED:"
+    print np.array([.5, .25])
 
 if __name__ == "__main__":
     main(sys.argv[1:])

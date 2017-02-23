@@ -3,11 +3,11 @@
     "networkClass": "Feedforward",
     "networkType": "MLPercep",
     "networkProperties" : {
-        "sizeInitialLayer" : 10,
-        "numberHiddenLayers": 1,
-        "hiddenLayerSizes": [5],
-        "normalizeInputs": true,
-        "numberInputs" : 10,
+        "normalizeInputs" : true,
+        "sizeInitialLayer" : 2,
+        "numberHiddenLayers": 2,
+        "hiddenLayerSizes": [2,3],
+        "numberInputs" : 2,
         "numberOutputs" : 2
     }
 }
