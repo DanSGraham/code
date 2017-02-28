@@ -29,6 +29,9 @@ class Brain:
             if "verbose" in networkInputFile["trainingProperties"]:
                 self.tVerbose = networkInputFile["trainingProperties"]["verbose"]
             self.training_method = batch_train 
+
+        if "trainingSet" in networkInputFile:
+            self.trainingSet = networkInputFile["trainingSet"]
         
 
     def load(self, brainFile):
@@ -37,11 +40,20 @@ class Brain:
     def save(self, destinationName):
         """Saves a brain to a file"""
 
-    def learn(self, trainingSet):
+    def learn(self, trainingSet=None):
         """Trains a brain on the training set"""
         #Format input and output data
-        input_vals = np.array([np.array([2,4])])
-        output_vals = np.array([np.array([.34, .22])])
+        #Single training set.
+        if trainingSet == None:
+            trainingFile = self.trainingSet[0]
+            with open(trainingFile) as json_file:
+                trainingSet = json.load(json_file)
+
+        input_vals = trainingSet["inputSet"]
+        output_vals = trainingSet["outputSet"]
+        for i in range(len(input_vals)):
+            input_vals[i] = np.array(input_vals[i])
+            output_vals[i] = np.array(output_vals[i])
         #Run training method
         self.training_method(self.network, input_vals, output_vals, self.bSize, self.tFactor, self.tVerbose)
 
@@ -91,7 +103,9 @@ def batch_train(network, input_set, output_set, batch_size, train_factor, verbos
         for n in range(len(weights_error)):
             weights_error[n] = np.multiply((train_factor / batch_size), weights_error[n])
             weights_error[n] = np.multiply((train_factor / batch_size), bias_error[n])
-
+        
+        print weights_error
+        print bias_error
         network.adjustment(weights_error, bias_error)
 
     weights_error = []
@@ -134,11 +148,6 @@ def online_train(network, input_set, output_set, train_factor, verbose=False):
 def stochastic_train(network, input_set, output_set, train_size, test_size, max_num_epochs, report_epochs, max_error_val, train_factor, verbose=False):
     pass
 
-        
-            
-            
-    
-
 #Brain has attributes, network, braintype.
 
 #Depending on brain type brain can have limited resources.
@@ -153,8 +162,8 @@ def main(argv):
         data_dict = json.load(json_data)
         test_brain = Brain(data_dict)
 
-    test_brain.learn((np.array([2,4]), np.array([.5,.25])))
-    print test_brain.predict(np.array([2,4]))
+    test_brain.learn()
+    print test_brain.predict(np.array([math.sin(0.25)]))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

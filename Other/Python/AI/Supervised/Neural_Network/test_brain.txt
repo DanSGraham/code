@@ -7,12 +7,13 @@
         "sizeInitialLayer" : 2,
         "numberHiddenLayers": 2,
         "hiddenLayerSizes": [2,3],
-        "numberInputs" : 2,
-        "numberOutputs" : 2
+        "numberInputs" : 1,
+        "numberOutputs" : 1
     },
     "trainingMethod": "Batch",
     "trainingProperties": {
         "trainingFactor": 1.0,
         "batchSize": 10
-    }
+    },
+    "trainingSet": ["train_set1.txt"]
 }
