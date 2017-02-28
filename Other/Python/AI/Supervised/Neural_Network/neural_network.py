@@ -2,8 +2,10 @@
 # By DanG
 
 #TODO:
-#Correct Single layer perceptron
 #Optimize MLPercpetron
+#Code other correction algorithms
+#Code other Network Types
+#Implement network save funcitonality
 
 
 import json
@@ -303,7 +305,7 @@ def some_kind_of_hybrid():
 
 def create_network(inputFile):
 
-    input_data = json.load(inputFile)
+    input_data = inputFile
 
     if (input_data["networkClass"] == "Feedforward"):
         if(input_data["networkType"] == "SLPercep"):

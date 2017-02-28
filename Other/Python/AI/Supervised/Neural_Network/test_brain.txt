@@ -9,5 +9,10 @@
         "hiddenLayerSizes": [2,3],
         "numberInputs" : 2,
         "numberOutputs" : 2
+    },
+    "trainingMethod": "Batch",
+    "trainingProperties": {
+        "trainingFactor": 1.0,
+        "batchSize": 10
     }
 }

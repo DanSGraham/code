@@ -10,6 +10,8 @@ import json
 
 
 #TODO: 
+#Add debug/evaluation methods to test effectiveness of different methods
+#print out graph of improvement over time or error over time.
 #Code various training regimes
 #Test SLPercep and MLPercep
 
@@ -19,6 +21,15 @@ class Brain:
     def __init__(self, networkInputFile):
         """Initializes the brain"""
         self.network = neural_network.create_network(networkInputFile)
+        
+        self.tVerbose = False
+        if networkInputFile["trainingMethod"] == "Batch":
+            self.tFactor = networkInputFile["trainingProperties"]["trainingFactor"]
+            self.bSize = networkInputFile["trainingProperties"]["batchSize"]
+            if "verbose" in networkInputFile["trainingProperties"]:
+                self.tVerbose = networkInputFile["trainingProperties"]["verbose"]
+            self.training_method = batch_train 
+        
 
     def load(self, brainFile):
         """Loads a brain from an existing file"""
@@ -26,17 +37,13 @@ class Brain:
     def save(self, destinationName):
         """Saves a brain to a file"""
 
-    def ponder(self, trainingSet):
+    def learn(self, trainingSet):
         """Trains a brain on the training set"""
-        inVal = trainingSet[0]
-        outVal = trainingSet[1]
-        print self.network.calculate(inVal)
-        for i in range(1000):
-            wVal, bVal = self.network.correction(outVal)
-            self.network.adjustment(wVal, bVal)
-            self.network.calculate(inVal)
-
-        print self.network.calculate(inVal)
+        #Format input and output data
+        input_vals = np.array([np.array([2,4])])
+        output_vals = np.array([np.array([.34, .22])])
+        #Run training method
+        self.training_method(self.network, input_vals, output_vals, self.bSize, self.tFactor, self.tVerbose)
 
     def predict(self, inputSet):
         """Predicts an output based on the trained values"""
@@ -44,6 +51,93 @@ class Brain:
 
     def evolve(self):
         """Grows new neurons and links. Trims trivial neurons and links"""
+
+##----------------------Training Methods---------------------------------------
+
+def batch_train(network, input_set, output_set, batch_size, train_factor, verbose=False):
+
+    leftover_data = len(input_set) % batch_size
+    upper_limit = len(input_set) - leftover_data
+
+    training_error = 0.0
+
+    for i in range(0, upper_limit, batch_size):
+        weights_error = []
+        bias_error = []
+        batch_error = 0.0
+
+        for n in range(len(network.network_weights)):
+            weights_error.append(np.zeros(network.network_weights[n].shape))
+            bias_error.append(np.zeros(network.network_bias[n].shape))
+ 
+        for j in range(batch_size):
+            network_output = network.calculate(input_set[i + j])
+            w_err_tmp, b_err_tmp = network.correction(output_set[i + j])
+
+            for n in range(len(weights_error)):
+                weights_error[n] += w_err_tmp[n]
+                bias_error[n] += b_err_tmp[n]
+
+            batch_error += np.divide(np.sum(np.multiply(np.divide(np.abs(\
+                               output_set[i + j] - network_output), \
+                               output_set[i + j]), 100.0)), len(network_output))
+
+        batch_error = batch_error / batch_size
+        if verbose:
+            print batch_error, "% batch train error"
+        
+        training_error += batch_error
+
+        for n in range(len(weights_error)):
+            weights_error[n] = np.multiply((train_factor / batch_size), weights_error[n])
+            weights_error[n] = np.multiply((train_factor / batch_size), bias_error[n])
+
+        network.adjustment(weights_error, bias_error)
+
+    weights_error = []
+    bias_error = []
+    batch_error = 0.0
+    for n in range(len(network.network_weights)):
+        weights_error.append(np.zeros(network.network_weights[n].shape))
+        bias_error.append(np.zeros(network.network_bias[n].shape))
+    for k in range(leftover_data):
+        network_output = network.calculate(input_set[upper_limit + k])
+        w_err_tmp, b_err_tmp = network.correction(output_set[upper_limit + k])
+        for n in range(len(weights_error)):
+            weights_error[n] += w_err_tmp[n]
+            bias_error[n] += b_err_tmp[n]
+        
+        batch_error += np.divide(np.sum(np.multiply(np.divide(np.abs(\
+                           output_set[upper_limit + k] - network_output), \
+                           output_set[upper_limit + k]), 100.0)), len(network_output))
+
+        batch_error = batch_error / batch_size
+        if verbose:
+            print batch_error, "% batch train error"
+            #Possibly return the value in list rather than print
+        
+        training_error += batch_error
+
+        for n in range(len(weights_error)):
+            weights_error[n] = np.multiply((train_factor / batch_size), weights_error[n])
+            bias_error[n] = np.multiply((train_factor / batch_size), bias_error[n])
+
+        network.adjustment(weights_error, bias_error)
+
+    
+    training_error = training_error / ((float(upper_limit) / batch_size) + int(bool(leftover_data)))
+    return training_error
+
+def online_train(network, input_set, output_set, train_factor, verbose=False):
+    return batch_train(network, input_set, output_set, 1.0, train_factor, verbose)
+
+def stochastic_train(network, input_set, output_set, train_size, test_size, max_num_epochs, report_epochs, max_error_val, train_factor, verbose=False):
+    pass
+
+        
+            
+            
+    
 
 #Brain has attributes, network, braintype.
 
@@ -56,11 +150,11 @@ class Brain:
 
 def main(argv):
     with open(argv[0]) as json_data:
-        test_brain = Brain(json_data)
-    test_brain.predict(np.array([2,4]))
-    test_brain.ponder((np.array([2,4]), np.array([.5,.25])))
-    print "EXPECTED:"
-    print np.array([.5, .25])
+        data_dict = json.load(json_data)
+        test_brain = Brain(data_dict)
+
+    test_brain.learn((np.array([2,4]), np.array([.5,.25])))
+    print test_brain.predict(np.array([2,4]))
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -1,0 +1,132 @@
+#Molecular Dynamics Simulation using Lennard-Jones
+#By Daniel Graham
+import math
+from mpl_toolkits.mplot3d import Axes3D
+import random
+import matplotlib.pyplot as plt
+import initialize_coordinates
+#import energy_lj
+import calc_velocity
+import numpy as np
+import time
+import calc_force
+
+def distance(coord1, coord2):
+    return np.sqrt(np.sum(np.square(coord2 - coord1)))
+
+
+def pair_correlation_fun(pos_matrix, bin_size, total_dist, bulk_density):
+    #A function to determine the pair correlation.
+    the_bins = np.array([0 for j in range(int(np.ceil(total_dist/bin_size)))])
+    for particle1 in pos_matrix:
+        for particle2 in pos_matrix:
+            if particle1[0] == particle2[0] and particle1[1] == particle2[1] and particle1[2] == particle2[2]:
+                continue
+            dist_val = distance(particle2, particle1)
+            if dist_val <= 4.:
+            	index_val = int(np.ceil((distance(particle2, particle1)) / bin_size)) - 1
+            	the_bins[index_val] += 1
+
+    for n in range(len(the_bins)):
+        div_value = 4 * np.pi * ((n + 1) * bin_size) ** 2. * bin_size
+        the_bins[n] = the_bins[n] / (float(len(pos_matrix)) * div_value * bulk_density)
+    return the_bins
+
+box_length = 8.0
+number_of_particles = 64
+temp = 1.0
+d_time = 0.01
+particle_mass = 1.
+
+total_time = 30
+
+start_time = time.clock()
+volume = box_length ** 3.0
+density = number_of_particles / volume
+beta = 1.0 / temp
+steps = int(total_time/d_time)
+
+total_energy_list = []
+kin_e_list = []
+pot_e_list = []
+avg_kin_e_list = []
+pair_correlation = []
+curr_pos_matrix = initialize_coordinates.init_coord(number_of_particles,box_length)
+
+force_matrix = np.zeros_like(curr_pos_matrix)
+vel_matrix = np.zeros_like(curr_pos_matrix)
+#vel_matrix = calc_velocity.calc_vel(number_of_particles, temp)
+
+(force_matrix, p_energy) = calc_force.calc_force_matrix(curr_pos_matrix, box_length)
+
+k_energy = 0.5 * (np.sum(np.square(vel_matrix)))
+total_energy = k_energy + p_energy
+total_energy_list.append(total_energy)
+kin_e_list.append(k_energy)
+pot_e_list.append(p_energy)
+avg_kin_e_list.append(np.sum(kin_e_list) / len(kin_e_list))
+
+
+next_pos_matrix = (curr_pos_matrix + (vel_matrix * d_time) + (0.5 * np.square(force_matrix / particle_mass) * d_time ** 2.))
+
+
+
+#UPDATE
+#Takes 20 time steps to reach equilibrium.
+for i in range(steps):
+	prev_pos_matrix = curr_pos_matrix
+	curr_pos_matrix = next_pos_matrix
+	(force_matrix, p_energy) = calc_force.calc_force_matrix(curr_pos_matrix, box_length)
+	next_pos_matrix = (2. * curr_pos_matrix) - prev_pos_matrix + (force_matrix * d_time ** 2.)
+	vel_matrix = (next_pos_matrix - prev_pos_matrix)/ (2. * d_time)
+	k_energy = 0.5 * (np.sum(np.square(vel_matrix)))
+	#print "Kinetic E", k_energy
+	#print "POT E", p_energy
+	total_energy = k_energy + p_energy
+	total_energy_list.append(total_energy)
+        kin_e_list.append(k_energy)
+        pot_e_list.append(p_energy)
+        avg_kin_e_list.append(np.sum(kin_e_list) / len(kin_e_list))
+	if( i % 1000 == 0):
+		print "Percent Complete: ", (i/float(steps)) * 100
+
+	if (i * d_time) > 20:
+            pair_correlation.append(pair_correlation_fun(curr_pos_matrix, 0.05, 4, 1.))
+
+
+	#print "TOT E", total_energy
+
+pair_correlation_avg = pair_correlation[0]
+
+for i in range(1, len(pair_correlation)):
+    pair_correlation_avg = np.add(pair_correlation_avg, pair_correlation[i])
+
+pair_correlation_avg = np.divide(pair_correlation_avg, float(len(pair_correlation)))
+print pair_correlation_avg
+
+fig = plt.plot(pair_correlation_avg)
+plt.show()
+
+
+"""
+#Display Portion
+fig2 = plt.plot(total_energy_list)
+fig3 = plt.plot(kin_e_list)
+fig4 = plt.plot(pot_e_list)
+fig5 = plt.plot(avg_kin_e_list, '-')
+plt.show()
+
+
+
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(111, projection='3d')
+ax2.scatter(curr_pos_matrix[:,0], curr_pos_matrix[:,1], curr_pos_matrix[:,2], c='b', marker='o')
+ax2.set_xlabel('X Label')
+ax2.set_ylabel('Y Label')
+ax2.set_zlabel('Z Label')
+ax2.set_xlim(0, 8)
+ax2.set_ylim(0, 8)
+ax2.set_zlim(0,8)
+plt.show()"""
+
+

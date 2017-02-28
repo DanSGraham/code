@@ -1,0 +1,38 @@
+#A program to calculate the force on particles in the system using Lennard-Jones energy
+#By Daniel Graham
+
+import numpy as np
+import math
+
+r_cutoff = 10.0
+rc2 = r_cutoff ** 2.
+rc6 = rc2 ** 3.
+rc12 = rc6 ** 2.
+ecut = 4.0 * ((1./rc12) - (1./rc6))
+
+def calc_force_matrix(pos_matrix, box_length):
+	l = box_length
+	en = 0.0
+	force_matrix = np.zeros_like(pos_matrix)
+	for i in range (0, len(pos_matrix) - 1):
+		particle_i = pos_matrix[i]
+		for j in range(i + 1, len(pos_matrix)):
+			particle_j = pos_matrix[j]
+			dist = particle_i - particle_j
+			for k in range(len(dist)):
+				dist[k] = dist[k] - round(dist[k]/l) * l
+			dist2 = dist ** 2
+			r2 = sum(dist2)
+			if r2 < rc2:
+				r6 = r2 ** 3.0
+				r12 = r2 ** 6.0
+				force_on_pi = ((48./r2) * ((1./r12) - (0.5/r6))) * dist
+				force_on_pj = -1.* force_on_pi
+				#Equal opposite forces.
+				force_matrix[i] += force_on_pi
+				force_matrix[j] += force_on_pj
+				en += 4.0 * ((1./r12) - (1./r6)) - ecut
+	return (force_matrix, en)
+
+
+				
