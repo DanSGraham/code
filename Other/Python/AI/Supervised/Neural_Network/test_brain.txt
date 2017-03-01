@@ -3,17 +3,18 @@
     "networkClass": "Feedforward",
     "networkType": "MLPercep",
     "networkProperties" : {
-        "normalizeInputs" : true,
-        "sizeInitialLayer" : 2,
-        "numberHiddenLayers": 2,
-        "hiddenLayerSizes": [2,3],
+        "normalizeInputs" : false,
+        "sizeInitialLayer" : 5,
+        "numberHiddenLayers": 1,
+        "hiddenLayerSizes": [50],
         "numberInputs" : 1,
         "numberOutputs" : 1
     },
     "trainingMethod": "Batch",
     "trainingProperties": {
         "trainingFactor": 1.0,
-        "batchSize": 10
+        "batchSize": 10,
+        "verbose": false
     },
     "trainingSet": ["train_set1.txt"]
 }

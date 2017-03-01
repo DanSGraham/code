@@ -513,10 +513,7 @@ def test():
 
 	
 	start = time.clock()	
-	test_network = Network(2, 2, [15, 50, 2])
-	test_network.save_network("HELLO.txt")
-	test_network.load_network("HELLO.txt")
-	raise ValueError()
+	test_network = Network(2, 2, 2, [10, 20, 2])
 
 	#test_network.batch_train(test_input, test_output, 5)
 	test_network.stochastic_train(test_input, test_output, 10, 200, 100, 4, 2)
