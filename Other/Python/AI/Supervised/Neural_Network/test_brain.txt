@@ -3,20 +3,21 @@
     "networkClass": "Feedforward",
     "networkType": "MLPercep",
     "networkProperties" : {
-        "costFunction": "CrossEntropy",
+        "costFunction": "Quadratic",
         "normalizeInputs" : false,
-        "sizeInitialLayer" : 5,
-        "numberHiddenLayers": 3,
-        "hiddenLayerSizes": [10,25,10],
+        "sizeInitialLayer" : 10,
+        "numberHiddenLayers": 1,
+        "hiddenLayerSizes": [50],
         "numberInputs" : 1,
         "numberOutputs" : 1
     },
     "trainingMethod": "Stochastic",
     "trainingProperties": {
-        "trainingFactor": 0.01,
-        "batchSize": 10,
+        "trainingFactor": 0.003,
+        "batchSize": 1,
         "maxEpochs": 50,
-        "verbose": false
+        "gradientMethod": "Momentum",
+        "momentumFactor": 0.9
     },
     "trainingSet": ["train_set1.txt"]
 }

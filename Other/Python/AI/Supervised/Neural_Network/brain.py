@@ -15,7 +15,6 @@ import neural_network
 #Docstring
 #Currently going with a 70/30 train to test method.
 #Do ROC analysis for error
-#Add debug/evaluation methods to test effectiveness of different methods
 #print out graph of improvement over time or error over time.
 #Code various training regimes
 #Test SLPercep and MLPercep
@@ -50,6 +49,51 @@ class Brain:
             self.bSize = networkInputFile["trainingProperties"]["batchSize"]
             self.maxEpochs = networkInputFile["trainingProperties"][
                                               "maxEpochs"]
+
+
+            self.gradient_method = standard
+            self.momentum = 0.9
+            self.smoothing = 10 ** (-8)
+            self.pVelocity = []
+            self.prev_error_mat = []
+            self.delta_factor = 0.9
+            self.average_error = []
+            for layer in self.network.network_weights:
+                self.pVelocity.append(np.zeros(layer.shape))
+
+            if "gradientMethod" in networkInputFile["trainingProperties"]:
+                train_prop = networkInputFile["trainingProperties"]
+                if train_prop["gradientMethod"] == "Standard":
+                    self.gradient_method = standard
+
+       
+                if train_prop["gradientMethod"] == "Momentum":
+                    self.gradient_method = momentum
+                    self.momentum = train_prop["momentumFactor"]
+
+                if train_prop["gradientMethod"] == "Nesterov":
+                    self.gradient_method = Nesterov_acc
+                    self.momentum = train_prop["momentumFactor"]
+
+                if train_prop["gradientMethod"] == "Adagrad":
+                    self.gradient_method = adagrad
+                    self.smoothing = train_prop["smoothingFactor"]
+
+                if train_prop["gradientMethod"] == "Adadelta":
+                    self.gradient_method = adadelta
+                    self.delta_factor = train_prop["deltaFactor"]
+
+                if train_prop["gradientMethod"] == "RMSprop":
+                    self.gradient_method = RMSprop
+                    self.delta_factor = train_prop["deltaFactor"]
+
+                if train_prop["gradientMethod"] == "Adam":
+                    self.gradient_method = adam
+                    self.momentum = train_prop["momentumFactor"]
+                if train_prop["gradientMethod"] == "gradientNoise":
+                    self.gradient_method = gradient_noise
+                    self.momentum = train_prop["momentumFactor"]
+
             self.training_method = stochastic_train
 
         if "trainingSet" in networkInputFile:
@@ -79,15 +123,9 @@ class Brain:
             output_vals[i] = np.array(output_vals[i])
         
         #Run training method
-        if self.maxEpochs != None:
-            return self.training_method(
-                self.network, input_vals, output_vals, 
-                self.maxEpochs, self.bSize, self.tFactor
-            )
-        else:
-            return self.training_method(
-                self.network, input_vals, output_vals, 
-                self.bSize, self.tFactor
+        return self.training_method(
+                self, input_vals, output_vals, 
+                self.bSize, self.tFactor, self.maxEpochs
             )
 
     def predict(self, inputSet):
@@ -101,8 +139,9 @@ class Brain:
 
 ##----------------------Training Methods---------------------------------------
 
-def batch_train(network, input_set, output_set, batch_size, train_factor):
+def batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
 
+    network = brain.network
     leftover_data = len(input_set) % batch_size
     upper_limit = len(input_set) - leftover_data
 
@@ -122,11 +161,16 @@ def batch_train(network, input_set, output_set, batch_size, train_factor):
                 weights_error[n] += w_err_tmp[n]
                 bias_error[n] += b_err_tmp[n]
 
+        weights_error = brain.gradient_method(
+            weights_error, (float(brain.tFactor)/batch_size), 
+            brain.pVelocity, brain.momentum, brain.smoothing)
+
+        brain.pVelocity = weights_error
+
         for n in range(len(weights_error)):
-            weights_error[n] = np.multiply(
-                (float(train_factor) / batch_size), weights_error[n])
             bias_error[n] = np.multiply(
                 (float(train_factor) / batch_size), bias_error[n])
+
         network.adjustment(weights_error, bias_error)
      
     weights_error = []
@@ -143,23 +187,28 @@ def batch_train(network, input_set, output_set, batch_size, train_factor):
             weights_error[n] += w_err_tmp[n]
             bias_error[n] += b_err_tmp[n]
         
+        weights_error = brain.gradient_method(
+            weights_error, (float(brain.tFactor)/batch_size), 
+            brain.pVelocity, brain.momentum, brain.smoothing)
+
+        brain.pVelocity = weights_error
+
         for n in range(len(weights_error)):
-            weights_error[n] = np.multiply(
-                (float(train_factor) / batch_size), weights_error[n])
             bias_error[n] = np.multiply(
                 (float(train_factor) / batch_size), bias_error[n])
 
     network.adjustment(weights_error, bias_error)
     return True
 
-def online_train(network, input_set, output_set, batch_size, train_factor):
+def online_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
 
-    return batch_train(network, input_set, output_set, 1, train_factor)
+    return batch_train(brain, input_set, output_set, 1, train_factor, epochs)
 
 def single_epoch(
-        network, input_matrix, output_matrix, 
+        brain, input_matrix, output_matrix, 
         minibatch_size, train_factor, train_to_test_ratio=0.7):
 
+    network = brain.network
     #Trains a single epoch.
     in_copy = []
     out_copy = []
@@ -168,7 +217,7 @@ def single_epoch(
     for i in range(int(len(input_matrix) * train_to_test_ratio)):
         in_copy.append(np.copy(input_matrix[index_list[i]]))
         out_copy.append(np.copy(output_matrix[index_list[i]]))
-    batch_train(network, in_copy, out_copy, minibatch_size, train_factor)
+    batch_train(brain, in_copy, out_copy, minibatch_size, train_factor)
     #Determine error in test set. 
     tot_SSE = 0.0
     for j in range(
@@ -180,15 +229,51 @@ def single_epoch(
     return tot_SSE
     
 def stochastic_train(
-        network, input_set, output_set, 
-        max_num_epochs, batch_size, train_factor):
-   
+        brain, input_set, output_set, 
+        batch_size, train_factor, max_epochs):
+
+    network = brain.network 
     SSE_list = []
-    for i in range(max_num_epochs):
+    for i in range(max_epochs):
         SSE_list.append(single_epoch(
-            network, input_set, output_set, batch_size, train_factor))
+            brain, input_set, output_set, batch_size, train_factor))
     return SSE_list
-    
+
+
+##--------------------------Gradient Descent Improvements----------------------
+#Found here: http://sebastianruder.com/optimizing-gradient-descent/ 
+def standard(weight_error, train_factor, prev_velocity=1, momentum_factor=1, smoothing_factor=1):
+    corr_err = [] 
+    for weight in weight_error:
+        corr_err.append(np.multiply(train_factor, weight))
+    return corr_err
+
+def momentum(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor=1):
+
+    corr_err = []
+    for i in range(len(weight_error)):
+        corr_err.append(np.multiply(momentum_factor, prev_velocity[i])
+            + np.multiply(train_factor, weight_error[i]))
+    return corr_err
+
+def Nesterov_acc():
+    pass
+
+def adagrad(weight_error, train_factor, smoothing_factor):
+    #Smoothig factor on the order of 10^-8
+    pass
+
+def adadelta(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor):
+    pass
+
+def RMSprop():
+    pass
+
+def adam():
+    pass
+
+def gradient_noise():
+    pass
 #Brain has attributes, network, braintype.
 
 #Depending on brain type brain can have limited resources.

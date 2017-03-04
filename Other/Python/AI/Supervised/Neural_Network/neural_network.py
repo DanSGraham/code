@@ -1,21 +1,19 @@
+"""Neural Network obect class specification
+
+"""
 #A neural network abstract class and concrete implementations.
 # By DanG
 
 #TODO:
+#Allow each layer of FF to have a different activation fxn 
 #Use Abstract Base Classes.
 #Write DocStrings
-#Clean up code
-#Optimize MLPercpetron
 #Code other Network Types
 #Implement network save funcitonality
 
 import json
 import numpy as np
 import time
-
-def distance2(vector1, vector2):
-
-    return np.sum(np.square(np.subtract(vector2, vector1)))
 
 class NeuralNetwork(object):
 
@@ -411,6 +409,9 @@ def some_kind_of_hybrid():
 
 ##-----------------------------------------------------------------------------
 
+def distance2(vector1, vector2):
+    """Return the square distance between two vectors"""
+    return np.sum(np.square(np.subtract(vector2, vector1)))
 
 def create_network(inputFile):
 
