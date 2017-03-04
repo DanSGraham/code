@@ -13,6 +13,9 @@ import json
 import numpy as np
 import time
 
+def distance2(vector1, vector2):
+
+    return np.sum(np.square(np.subtract(vector2, vector1)))
 
 class NeuralNetwork(object):
 
@@ -27,7 +30,7 @@ class NeuralNetwork(object):
         self.optimization = "backpropagation"
         self.use_bias = True
 
-        self.properties = input_file["networkProperties"]
+        self.properties = input_dict["networkProperties"]
         if "activationFunction" in self.properties:
             if self.properties["activationFunction"] == "tanh":
                 self.activation_function = tan_hyperbolic
@@ -127,7 +130,11 @@ class SingleLayerPerceptron(FFNeuralNetwork):
             self.activation_input[-1], self.slope_param)
         self.error = np.multiply(self.cost_function(self.data_layers[-1], 
             target_values), deriv_act_fun)
-        return self.error
+        self.weights_error = np.multiply(self.error.T, self.data_layers[0])
+        square_sum_error = np.divide(
+            np.sum(np.square(self.data_layers[-1] - target_values)), 
+            len(target_values))
+        return (self.weights_error, self.error, square_sum_error)
 
     def adjustment(self, weights_adjust, bias_adjust):
 
@@ -240,11 +247,11 @@ class MultiLayerPerceptron(FFNeuralNetwork):
 
         #Multiply by the correct adjustment and return
         self.error_list = list(reversed(self.error_list))
-        self.weights_error = list(reversed(self.weights_error))    #Weights error calculated outside in train function
+        self.weights_error = list(reversed(self.weights_error))
         square_sum_error = np.divide(
             np.sum(np.square(self.data_layers[-1] - target_values)), 
             len(target_values))
-        return (self.error_list, square_sum_error)        
+        return (self.weights_error, self.error_list, square_sum_error)
 
     def adjustment(self, weights_adjust, bias_adjust):
 
