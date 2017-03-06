@@ -15,7 +15,7 @@
     "trainingProperties": {
         "trainingFactor": 0.003,
         "batchSize": 1,
-        "maxEpochs": 50,
+        "maxEpochs": 200,
         "gradientMethod": "Momentum",
         "momentumFactor": 0.9
     },
