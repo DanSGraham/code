@@ -7,11 +7,14 @@ import random
 import sys
 import time
 import numpy as np
-#from pybrain.structure import FeedForwardNetwork, SigmoidLayer, FullConnection
+from pybrain.tools.shortcuts import buildNetwork
+from pybrain.datasets import SupervisedDataSet
+from pybrain.supervised.trainers import BackpropTrainer
 import neural_network
 
 
 #TODO: 
+#Compare to PyBrain.
 #Docstring
 #Currently going with a 70/30 train to test method.
 #Do ROC analysis for error
@@ -287,33 +290,50 @@ def gradient_noise():
 
 def main(argv):
 
-
-
     with open(argv[0]) as json_data:
         data_dict = json.load(json_data)
-        test_brain = Brain(data_dict)
+    compareBrains(data_dict)
+
+
+def compareBrains(data_dict):
+
+    test_brain = Brain(data_dict)
 
     #Simple Test 
+    print "MY BRAIN RESULTS"
     in_data = 0.25
     print test_brain.predict(np.array([in_data]))
     print test_brain.learn(test_brain.trainingSet[0])
     print math.sin(in_data)
     print test_brain.predict(np.array([in_data]))
 
+
+    print "PYBRAIN RESULTS"
     #Use Pybrain to compare output results
-#    compare_brain = FeedForwardNetwork()
-#    inLayer = SigmoidLayer(data_dict["networkProperties"]["sizeInitialLayer"])
-#    hiddenLayer = SigmoidLayer(data_dict["networkProperties"][
-#        "hiddenLayerSizes"][0])
-#    outLayer = SigmoidLayer(data_dict["networkProperties"]["numberOutputs"])
-#    compare_brain.addInputModule(inLayer)
-#    compare_brain.addModule(hiddenLayer)
-#    compare_brain.addOutputModule(outLayer)
-#    in_2_hid = FullConnection(inLayer, hiddenLayer)
-#    hid_2_out = FullConnection(hiddenLayer, outLayer)
-#    compare_brain.addConnection(in_2_hid)
-#    compare_brain.addConnection(hid_2_out)
-#    compare_brain.sortModules()
+    #Build pybrain
+    compare_brain = buildNetwork(1, data_dict["networkProperties"]["hiddenLayerSizes"][0], 1, bias=True)
+    print compare_brain.activate([in_data])
+    print compare_brain["in"]
+    #Build Dataset
+    ds = SupervisedDataSet(1,1)
+    trainingFile = test_brain.trainingSet[0] 
+    with open(trainingFile) as json_file:
+        trainingSet = json.load(json_file)
+
+    input_vals = trainingSet["inputSet"]
+    output_vals = trainingSet["outputSet"]
+
+    for i in range(len(input_vals)):
+        ds.addSample((input_vals[i][0],), (output_vals[i][0],))
+
+    trainer = BackpropTrainer(compare_brain, ds)
+
+    for i in range(data_dict["trainingProperties"]["maxEpochs"]):
+        trainer.train()
+
+    print "EXPECTED VS OUTPUT"
+    print math.sin(in_data)
+    print compare_brain.activate([in_data])
 
 if __name__ == "__main__":
     main(sys.argv[1:])
