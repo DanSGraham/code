@@ -5,17 +5,17 @@
     "networkProperties" : {
         "costFunction": "Quadratic",
         "normalizeInputs" : false,
-        "sizeInitialLayer" : 10,
+        "sizeInitialLayer" : 1,
         "numberHiddenLayers": 1,
-        "hiddenLayerSizes": [50],
+        "hiddenLayerSizes": [10],
         "numberInputs" : 1,
         "numberOutputs" : 1
     },
     "trainingMethod": "Stochastic",
     "trainingProperties": {
-        "trainingFactor": 0.003,
+        "trainingFactor": 0.03,
         "batchSize": 1,
-        "maxEpochs": 50,
+        "maxEpochs": 10,
         "gradientMethod": "Momentum",
         "momentumFactor": 0.9
     },
