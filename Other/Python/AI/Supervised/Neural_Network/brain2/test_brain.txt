@@ -1,0 +1,22 @@
+{
+    "_comment": "input file for creating a new NN",
+    "networkClass": "Feedforward",
+    "networkType": "MLPercep",
+    "networkProperties" : {
+        "costFunction": "Quadratic",
+        "numberHiddenLayers": 1,
+        "hiddenLayerSizes": [10],
+        "activationFunctions": ["Linear", "Sigmoid", "Linear"],
+        "numberInputs" : 1,
+        "numberOutputs" : 1
+    },
+    "trainingMethod": "Stochastic",
+    "trainingProperties": {
+        "trainingFactor": 0.03,
+        "batchSize": 1,
+        "maxEpochs": 100,
+        "gradientMethod": "Momentum",
+        "momentumFactor": 0.9
+    },
+    "trainingSet": ["train_set1.txt"]
+}
