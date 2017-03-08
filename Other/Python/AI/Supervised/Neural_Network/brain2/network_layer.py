@@ -104,7 +104,11 @@ class HiddenLayer(Layer):
         return self.output
 
     #I don't like this but this is what I am thinking for backprop
-    def next_layer(self, next_layer):
+
+    def connect_prev_layer(self, prev_layer):
+        self.prev_layer = prev_layer
+
+    def connect_next_layer(self, next_layer):
         self.next_layer = next_layer
 
     def correction(self, error):
@@ -134,6 +138,9 @@ class OutputLayer(Layer):
             self.cost_fxn_grad = functions.cross_entropy_cost_grad
         if cost_fxn == "":
             pass
+
+    def connect_prev_layer(self, prev_layer):
+        self.prev_layer = prev_layer
 
     def activate(self, input_vector):
 
