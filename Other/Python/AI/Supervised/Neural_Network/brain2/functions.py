@@ -123,7 +123,7 @@ def d_softmax(input_stimulus, slope_param=1.0):
     SM = value.reshape((-1,1))
     return np.diag(value) - np.dot(SM, SM.T)
 
-##----------------------------Cost Function Gradients--------------------------
+##-------------------------------Cost Functions--------------------------------
 
 #Many found here: http://stats.stackexchange.com/questions/154879/a-list-of-cost-functions-used-in-neural-networks-alongside-applications
 
@@ -146,25 +146,31 @@ def cross_entropy_cost_grad(output_vector, target_vector):
     return np.divide((output_vector - target_vector), 
                      ((1. - output_vector) * output_vector))
 
-#The exponential cost fxns not done.
 def exponential_cost(output_vector, target_vector, t_param=1.0):
 
-    pass
-
+    exp_val = np.multiply((1. / t_param), 
+        np.sum((output_vector - target_vector) ** 2.))
+    cost_val = np.multiply(t_param, np.exp(exp_val))
+    return cost_val
 
 def exponential_cost_grad(output_vector, target_vector, t_param=1.0):
 
-    #Not sure if this is right. Need to check.
-    exp_val = (1. / t_param) * np.sum((output_vector - target_vector) ** 2.)
-    cost_val = t_param * np.exp(exp_val)
-    coeff_vector = (2./t_param) * (output_vector - target_vector)
-    return coeff_vector * cost_val 
+    cost_val = exponential_cost(output_vector, target_vector, t_param) 
+    coeff_vector = np.multiply((2./t_param), (output_vector - target_vector))
+    return np.multiply(coeff_vector, cost_val) 
+
+def Hellinger_distance(output_vector, target_vector):
+
+    #Requires positive values
+    coeff = 1. / (2. ** .5)
+    c_val = np.sum(np.square(np.sqrt(output_vector) - np.sqrt(target_vector)))
+    return np.multiply(coeff, c_val)
 
 def Hellinger_distance_grad(output_vector, target_vector):
 
     #Requires positive values
-    return (np.sqrt(output_vector) - np.sqrt(target_vector)) \
-           / (np.sqrt(2) * np.sqrt(output_vector))
+    return np.divide((np.sqrt(output_vector) - np.sqrt(target_vector)), 
+        np.multiply(np.sqrt(2), np.sqrt(output_vector)))
 
 def Kullback_Leibler_divergence(output_vector, target_vector):
 
@@ -173,17 +179,23 @@ def Kullback_Leibler_divergence(output_vector, target_vector):
 
 def Kullback_Leibler_divergence_grad(output_vector, target_vector):
 
-    return -1 * np.divide(target_vector, output_vector)
+    return np.multiply(-1., np.divide(target_vector, output_vector))
 
 def gen_Kullback_Leibler_divergence(output_vector, target_vector):
-    pass
+    
+    return (Kullback_Leibler_divergence(output_vector, target_vector) 
+        - np.sum(target_vector) + np.sum(output_vector))
 
 def gen_Kullback_Leibler_divergence_grad(output_vector, target_vector):
 
     return -1 * (np.divide((target_vector + output_vector), output_vector))
 
+def Itakura_Saito_distance(output_vector, target_vector):
+
+    val = np.sum(np.divide(target_vector, output_vector) - 
+        np.log(np.divide(target_vector, output_vector)) - 1)
+    return val
+
 def Itakura_Saito_distance_grad(output_vector, target_vector):
 
     return np.divide((output_vector - target_vector), (output_vector) ** 2.)
-
-##-----------------------------------------------------------------------------
