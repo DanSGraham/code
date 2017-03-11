@@ -22,7 +22,6 @@ class NeuralNetwork(object):
 
     def __init__(self, input_dict):
 
-        self.cost_function = quad_cost_grad
         self.optimization = "backpropagation"
         self.use_bias = True
         self.activation_fxns = input_dict["networkProperties"][
@@ -35,12 +34,6 @@ class NeuralNetwork(object):
         if "useBias" in self.properties:
             self.use_bias = self.properties["useBias"]
 
-        if "costFunction" in self.properties:
-            cFun = self.properties["costFunction"]
-            if cFun == "Quadratic":
-                self.cost_function = quad_cost_grad
-            if cFun == "CrossEntropy":
-                self.cost_function = cross_entropy_cost_grad
         if "optimizationMethod" in self.properties:
             self.optimization = self.properties["optimizationMethod"]
 
@@ -150,10 +143,10 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         self.num_hidden_layers = self.properties["numberHiddenLayers"]
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
         self.num_output_neurons = self.properties["numberOutputs"]
-        self.network = []
+        self.network_layers = []
 
         input_layer = nl.InputLayer((self.num_inputs, 1), (self.num_inputs, 1))
-        self.network.append(input_layer)
+        self.network_layers.append(input_layer)
 
         temp_inputs = self.num_inputs
         for i in range(self.num_hidden_layers):
@@ -161,24 +154,28 @@ class MultiLayerPerceptron(FFNeuralNetwork):
             hidden_layer = nl.HiddenLayer((layer_size, temp_inputs), 
                                        (layer_size, 1))
 
-            self.network.append(hidden_layer)
+            self.network_layers.append(hidden_layer)
             temp_inputs = layer_size
 
         #Create output layer:
         output_layer = nl.OutputLayer((self.num_output_neurons, temp_inputs), 
-                                   (self.num_output_neurons, 1))
+                                      (self.num_output_neurons, 1), 
+                                      activation_fxn=self.activation_fxns[-1])
 
-        self.network.append(output_layer)
+        self.network_layers.append(output_layer)
 
         #Establish the connections
-        for i in range(len(self.network)-2, -1, -1):
-            self.network[i].next_layer(self.network[i + 1])
+        for i in range(len(self.network_layers)-2, -1, -1):
+            self.network_layers[i].connect_next_layer(self.network_layers[i + 1])
+
+        for j in range(1, len(self.network_layers)):
+            self.network_layers[j].connect_prev_layer(self.network_layers[j - 1])
 
     def calculate(self, input_values):
 
         #input stimulus is a 1D array in bra form 
         self.data_layers = [input_values]
-        for layer in self.network:
+        for layer in self.network_layers:
             data_output = layer.activate(self.data_layers[-1])
             self.data_layers.append(data_output)
         return self.data_layers[-1] 
@@ -190,11 +187,11 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         self.error_list = []    #This list must be flipped around at the end.
         self.weights_error = [] #This must also be flipped
         #OutputError first
-        w_err, err, total_err = self.network[-1].correction(target_values)
+        w_err, err, total_err = self.network_layers[-1].correction(target_values)
         self.error_list.append(err)
         self.weights_error.append(w_err)
-        for i in range((len(self.network) - 2), -1, -1):
-            w_err, err, t_e = self.network[i].correction(self.error_list[-1])
+        for i in range((len(self.network_layers) - 2), -1, -1):
+            w_err, err, t_e = self.network_layers[i].correction(self.error_list[-1])
             self.error_list.append(err)
             self.weights_error.append(w_err)
 
@@ -205,8 +202,8 @@ class MultiLayerPerceptron(FFNeuralNetwork):
     def adjustment(self, weights_adjust, bias_adjust):
 
         #Adjust the weights and biases to correct network.
-        for i in range(len(self.network)):
-            self.network[i].adjust(weights_adjust[i], bias_adjust[i])
+        for i in range(len(self.network_layers)):
+            self.network_layers[i].adjust(weights_adjust[i], bias_adjust[i])
 
 
 
@@ -216,8 +213,84 @@ class RNeuralNetwork(NeuralNetwork):
 
 
     def __init__(self, input_data):
+        super(RFNeuralNetwork, self).__init__(input_dict)
+        self.input_data = input_dict
+        self.input_size = self.properties['inputSize']
+        self.output_size = self.properties["outputSize"]
 
-        pass
+
+class RecurrantMultiLLayerPerceptron(RNeuralNetwork):
+
+
+
+    def __init__(self, input_data):
+
+        super(RecurrantMultiLayerPerceptron, self).__init__(input_data)
+        self.num_hidden_layers = self.properties["numberHiddenLayers"]
+        self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
+        self.num_output_neurons = self.properties["numberOutputs"]
+        self.network_layers = []
+
+        input_layer = nl.InputLayer((self.num_inputs, 1), (self.num_inputs, 1))
+        self.network_layers.append(input_layer)
+
+        temp_inputs = self.num_inputs
+        for i in range(self.num_hidden_layers):
+            layer_size = self.hidden_layer_sizes[i]
+            hidden_layer = nl.HiddenLayer((layer_size, temp_inputs), 
+                                       (layer_size, 1))
+
+            self.network_layers.append(hidden_layer)
+            temp_inputs = layer_size
+
+        #Create output layer:
+        output_layer = nl.OutputLayer((self.num_output_neurons, temp_inputs), 
+                                      (self.num_output_neurons, 1), 
+                                      activation_fxn=self.activation_fxns[-1])
+
+        self.network_layers.append(output_layer)
+
+        #Establish the connections
+        for i in range(len(self.network_layers)-2, -1, -1):
+            self.network_layers[i].connect_next_layer(self.network_layers[i + 1])
+
+        for j in range(1, len(self.network_layers)):
+            self.network_layers[j].connect_prev_layer(self.network_layers[j - 1])
+
+    def calculate(self, input_values):
+
+        #input stimulus is a 1D array in bra form 
+        self.data_layers = [input_values]
+        for layer in self.network_layers:
+            data_output = layer.activate(self.data_layers[-1])
+            self.data_layers.append(data_output)
+        return self.data_layers[-1] 
+
+    def correction(self, target_values):
+        
+        #Generate the error matrices to make adjustments.
+        #Iterate backwards through layers calculating error.
+        self.error_list = []    #This list must be flipped around at the end.
+        self.weights_error = [] #This must also be flipped
+        #OutputError first
+        w_err, err, total_err = self.network_layers[-1].correction(target_values)
+        self.error_list.append(err)
+        self.weights_error.append(w_err)
+        for i in range((len(self.network_layers) - 2), -1, -1):
+            w_err, err, t_e = self.network_layers[i].correction(self.error_list[-1])
+            self.error_list.append(err)
+            self.weights_error.append(w_err)
+
+        self.error_list = list(reversed(self.error_list))
+        self.weights_error = list(reversed(self.weights_error))
+        return (self.weights_error, self.error_list,  total_err)
+
+    def adjustment(self, weights_adjust, bias_adjust):
+
+        #Adjust the weights and biases to correct network.
+        for i in range(len(self.network_layers)):
+            self.network_layers[i].adjust(weights_adjust[i], bias_adjust[i])
+
 
 
 
@@ -276,11 +349,7 @@ def wavelet_transforms():
 def some_kind_of_hybrid():
     pass
 
-##-----------------------------------------------------------------------------
 
-def distance2(vector1, vector2):
-    """Return the square distance between two vectors"""
-    return np.sum(np.square(np.subtract(vector2, vector1)))
 
 def create_network(inputFile):
 

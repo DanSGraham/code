@@ -61,7 +61,7 @@ class Brain:
             self.prev_error_mat = []
             self.delta_factor = 0.9
             self.average_error = []
-            for layer in self.network.network:
+            for layer in self.network.network_layers:
                 self.pVelocity.append(np.zeros(layer.weights.shape))
 
             if "gradientMethod" in networkInputFile["trainingProperties"]:
@@ -152,7 +152,7 @@ def batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1
         weights_error = []
         bias_error = []
 
-        for layer in network.network:
+        for layer in network.network_layers:
             weights_error.append(np.zeros(layer.weights.shape))
             bias_error.append(np.zeros(layer.bias.shape))
 
@@ -179,7 +179,7 @@ def batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1
     weights_error = []
     bias_error = []
 
-    for layer in network.network:
+    for layer in network.network_layers:
         weights_error.append(np.zeros(layer.weights.shape))
         bias_error.append(np.zeros(layer.bias.shape))
 
