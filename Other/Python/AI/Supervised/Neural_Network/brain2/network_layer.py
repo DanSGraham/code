@@ -203,17 +203,38 @@ class FFOutputLayer(Layer):
         self.total_error = self.cost_fxn(self.output, target)
         return self.weights_error, self.error, self.total_error
 
-class RInputLayer(Layer, FFInputLayer):
+class RInputLayer(FFInputLayer):
 
-    def __init(
+    def __init__(
         self, weights, bias,
         activation_fxn="Linear", slope_param=1.0, use_bias=True):
 
-        Layer.__init__(
+        super(RInputLayer, self).__init__(
             weights, bias, activation_fxn, slope_param, use_bias)
-        FFInputLayer.__init__(
+
+        self.internal_weights = np.random.uniform(-1, 1, (self.weights.shape[0], 1))
+        self.output = 0.0
+
+    def activate(self, input_vector):
+        self.input_vector = input_vector
+        self.activation_input = (np.multiply(self.weights, input_vector) 
+            + np.multiply(self.internal_weights, self.output) + self.bias)
+        self.output = self.activation_fxn(
+            self.activation_input, self.slope_param)
+        return self.output
+
+        
+    
+class RHiddenLayer(FFHiddenLayer):
+
+    def __init__(
+        self, weights, bias,
+        activation_fxn="Sigmoid", slope_param=1.0, use_bias=True):
+
+        super(RHiddenLayer, self).__init__(
             weights, bias, activation_fxn, slope_param, use_bias)
-        self.internal_weights = np.random.uniform(-1, 1, (weights[0], 1))
+
+        self.internal_weights = np.random.uniform(-1, 1, (self.weights.shape[0], 1))
         self.output = 0.0
 
     def activate(self, input_vector):
@@ -223,12 +244,25 @@ class RInputLayer(Layer, FFInputLayer):
         self.output = self.activation_fxn(
             self.activation_input, self.slope_param)
         return self.output
-        
-    
-class RHiddenLayer(Layer):
 
-    pass
+class ROutputLayer(FFOutputLayer):
 
-class ROutputLayer(Layer):
+    def __init__(
+        self, weights, bias,
+        activation_fxn="Linear", cost_fxn="Quadratic", 
+        slope_param=1.0, use_bias=True):
 
-    pass
+        super(RInputLayer, self).__init__(
+            weights, bias, activation_fxn, cost_fxn, slope_param, use_bias)
+
+        self.internal_weights = np.random.uniform(-1, 1, (self.weights.shape[0], 1))
+        self.output = 0.0
+
+    def activate(self, input_vector):
+        self.input_vector = input_vector
+        self.activation_input = (np.dot(self.weights, input_vector) 
+            + np.multiply(self.internal_weights, self.output) + self.bias)
+        self.output = self.activation_fxn(
+            self.activation_input, self.slope_param)
+        return self.output
+
