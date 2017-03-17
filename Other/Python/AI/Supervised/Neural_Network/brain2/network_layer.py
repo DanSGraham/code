@@ -260,40 +260,74 @@ class RHiddenLayer(FFHiddenLayer):
 
         #BPPTT
         #Guided by: peterroelants.github.io/posts/rnn_implementation_part01/
-        self.error = 0.0
         self.weights_error = 0.0
         self.internal_weights_error = 0.0
         self.error = np.multiply(
             np.dot(self.next_layer_weights.T, error),
             self.d_activation_fxn(self.activation_input[-1], self.slope_param))
-
-        #CHeck the following for accuracy 
         temp_error = self.error
-        for k in range(len(self.output)-2, 0, -1):
-            self.weights_error += np.dot(temp_error, self.input_vector[k])
-            self.internal_weights_error += np.dot(temp_error, self.output_vector[k])
+        for k in range(len(self.input_vector), 0, -1):
+            self.weights_error += np.dot(temp_error, self.input_vector[k-1])
+            self.internal_weights_error += np.dot(temp_error, self.output_vector[k-1])
             temp_error = np.multiply(temp_error, self.internal_weights)
 
         return self.weights_error, self.internal_weights_error, self.error, None
+
+    def adjust(self, adjust_weights, adjust_internal_weights, adjust_bias):
+        self.weights = np.subtract(self.weights, adjust_weights)
+        self.internal_weights = np.subtract(self.internal_weights, adjust_internal_weights)
+        self.bias = np.subtract(self.bias, adjust_bias)
+        return True
 
 class ROutputLayer(FFOutputLayer):
 
     def __init__(
         self, weights, bias,
-        activation_fxn="Linear", cost_fxn="Quadratic", 
-        slope_param=1.0, use_bias=True):
+        activation_fxn="Linear", cost_fxn="Quadratic",
+        slope_param=1.0, use_bias=True, backprop_trunc=float("inf")):
 
-        super(RInputLayer, self).__init__(
-            weights, bias, activation_fxn, cost_fxn, slope_param, use_bias)
+        super(ROutputLayer, self).__init__(
+            weights, bias, activation_fxn, slope_param, use_bias)
 
-        self.internal_weights = np.random.uniform(-1, 1, (self.weights.shape[0], 1))
-        self.output = 0.0
+        self.internal_weights = np.random.uniform(
+             -1, 1, (self.weights.shape[0], 1))
+        self.output = [0.0]
+        self.input_vector = []
+        self.activation_input = []
+        self.backprop_trunc = backprop_trunc
+        
 
     def activate(self, input_vector):
-        self.input_vector = input_vector
-        self.activation_input = (np.dot(self.weights, input_vector) 
-            + np.multiply(self.internal_weights, self.output) + self.bias)
-        self.output = self.activation_fxn(
-            self.activation_input, self.slope_param)
-        return self.output
+        self.input_vector.append(input_vector)
+        self.activation_input.append(np.dot(self.weights, input_vector) 
+            + np.multiply(self.internal_weights, self.output[-1]) + self.bias)
+        self.output.append(self.activation_fxn(
+            self.activation_input, self.slope_param))
+        return self.output[-1]
 
+    def refresh_memory(self):
+        self.output = [0.0]
+        self.input_vector = []
+        self.activation_input = []
+
+    def correction(self, target):
+
+        self.weights_error = 0.0
+        self.internal_weights_error = 0.0
+        self.error = np.multiply(
+            self.cost_fxn_grad(self.output[-1], target), 
+            self.d_activation_fxn(self.activation_input[-1], self.slope_param))
+        temp_error = self.error
+        #Could be incorrect. Should check
+        for k in range(len(self.input_vector), 0, -1):
+            self.weights_error += np.dot(temp_error, self.input_vector[k-1].T)
+            self.internal_weights_error += np.dot(temp_error, self.output_vector[k-1])
+            temp_error = np.multiply(temp_error, self.internal_weights)
+        self.total_error = self.cost_fxn(self.output[-1], target)
+        return self.weights_error, self.internal_weights_error, self.error, self.total_error
+
+    def adjust(self, adjust_weights, adjust_internal_weights, adjust_bias):
+        self.weights = np.subtract(self.weights, adjust_weights)
+        self.internal_weights = np.subtract(self.internal_weights, adjust_internal_weights)
+        self.bias = np.subtract(self.bias, adjust_bias)
+        return True
