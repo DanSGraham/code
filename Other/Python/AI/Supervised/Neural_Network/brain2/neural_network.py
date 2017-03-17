@@ -66,8 +66,8 @@ class FFNeuralNetwork(NeuralNetwork):
 
         super(FFNeuralNetwork, self).__init__(input_dict)
         self.input_data = input_dict
-        self.num_inputs = self.properties['numberInputs']
-        self.num_outputs = self.properties["numberOutputs"]
+        self.input_size = self.properties['inputSize']
+        self.output_size = self.properties["outputSize"]
 
     def calculate(self, input_data):
 
@@ -93,10 +93,10 @@ class SingleLayerPerceptron(FFNeuralNetwork):
     def __init__(self, input_dict):
 
         super(SingleLayerPerceptron, self).__init__(input_dict)
-        self.num_neurons = self.num_outputs
+        self.num_neurons = self.output_size
         self.network = []
         self.network.append(HiddenLayer(
-            (self.num_neurons, self.num_inputs), (self.num_neurons, 1)))
+            (self.num_neurons, self.input_size), (self.num_neurons, 1)))
 
     def calculate(self, input_stimulus):
 
@@ -142,13 +142,13 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         super(MultiLayerPerceptron, self).__init__(input_data)
         self.num_hidden_layers = self.properties["numberHiddenLayers"]
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
-        self.num_output_neurons = self.properties["numberOutputs"]
+        self.num_output_neurons = self.properties["outputSize"]
         self.network_layers = []
 
-        input_layer = nl.InputLayer((self.num_inputs, 1), (self.num_inputs, 1))
+        input_layer = nl.InputLayer((self.input_size, 1), (self.input_size, 1))
         self.network_layers.append(input_layer)
 
-        temp_inputs = self.num_inputs
+        temp_inputs = self.input_size
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
             hidden_layer = nl.HiddenLayer((layer_size, temp_inputs), 
@@ -213,13 +213,13 @@ class RNeuralNetwork(NeuralNetwork):
 
 
     def __init__(self, input_data):
-        super(RFNeuralNetwork, self).__init__(input_dict)
-        self.input_data = input_dict
+        super(RNeuralNetwork, self).__init__(input_data)
+        self.input_data = input_data
         self.input_size = self.properties['inputSize']
         self.output_size = self.properties["outputSize"]
 
 
-class RecurrantMultiLLayerPerceptron(RNeuralNetwork):
+class RecurrantMultiLayerPerceptron(RNeuralNetwork):
 
 
 
@@ -228,23 +228,24 @@ class RecurrantMultiLLayerPerceptron(RNeuralNetwork):
         super(RecurrantMultiLayerPerceptron, self).__init__(input_data)
         self.num_hidden_layers = self.properties["numberHiddenLayers"]
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
-        self.num_output_neurons = self.properties["numberOutputs"]
+        self.num_output_neurons = self.properties["outputSize"]
         self.network_layers = []
 
-        input_layer = nl.InputLayer((self.num_inputs, 1), (self.num_inputs, 1))
+        input_layer = nl.RInputLayer(
+            (self.input_size, 1), (self.input_size, 1))
         self.network_layers.append(input_layer)
 
-        temp_inputs = self.num_inputs
+        temp_inputs = self.input_size
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
-            hidden_layer = nl.HiddenLayer((layer_size, temp_inputs), 
+            hidden_layer = nl.RHiddenLayer((layer_size, temp_inputs), 
                                        (layer_size, 1))
 
             self.network_layers.append(hidden_layer)
             temp_inputs = layer_size
 
         #Create output layer:
-        output_layer = nl.OutputLayer((self.num_output_neurons, temp_inputs), 
+        output_layer = nl.ROutputLayer((self.num_output_neurons, temp_inputs), 
                                       (self.num_output_neurons, 1), 
                                       activation_fxn=self.activation_fxns[-1])
 
@@ -252,10 +253,12 @@ class RecurrantMultiLLayerPerceptron(RNeuralNetwork):
 
         #Establish the connections
         for i in range(len(self.network_layers)-2, -1, -1):
-            self.network_layers[i].connect_next_layer(self.network_layers[i + 1])
+            self.network_layers[i].connect_next_layer(
+                self.network_layers[i + 1])
 
         for j in range(1, len(self.network_layers)):
-            self.network_layers[j].connect_prev_layer(self.network_layers[j - 1])
+            self.network_layers[j].connect_prev_layer(
+                self.network_layers[j - 1])
 
     def calculate(self, input_values):
 
@@ -272,24 +275,37 @@ class RecurrantMultiLLayerPerceptron(RNeuralNetwork):
         #Iterate backwards through layers calculating error.
         self.error_list = []    #This list must be flipped around at the end.
         self.weights_error = [] #This must also be flipped
+        self.internal_weights_error = []
         #OutputError first
-        w_err, err, total_err = self.network_layers[-1].correction(target_values)
+        w_err, int_w_err, err, total_err = (
+            self.network_layers[-1].correction(target_values))
         self.error_list.append(err)
         self.weights_error.append(w_err)
+        self.internal_weights_error.append(int_w_err)
         for i in range((len(self.network_layers) - 2), -1, -1):
-            w_err, err, t_e = self.network_layers[i].correction(self.error_list[-1])
+            w_err, int_w_err, err, t_e = (
+                self.network_layers[i].correction(self.error_list[-1]))
             self.error_list.append(err)
             self.weights_error.append(w_err)
+            self.internal_weights_error.append(int_w_err)
 
         self.error_list = list(reversed(self.error_list))
         self.weights_error = list(reversed(self.weights_error))
-        return (self.weights_error, self.error_list,  total_err)
+        self.internal_weights_error = list(
+            reversed(self.internal_weights_error))
+        return (self.weights_error, self.internal_weights_error, 
+            self.error_list,  total_err)
 
-    def adjustment(self, weights_adjust, bias_adjust):
+    def reset_memory(self):
+        for layer in self.network_layers:
+            layer.refresh_memory()
+
+    def adjustment(self, weights_adjust, internal_weights_adjust, bias_adjust):
 
         #Adjust the weights and biases to correct network.
         for i in range(len(self.network_layers)):
-            self.network_layers[i].adjust(weights_adjust[i], bias_adjust[i])
+            self.network_layers[i].adjust(weights_adjust[i], 
+                internal_weights_adjust[i], bias_adjust[i])
 
 
 
@@ -361,4 +377,7 @@ def create_network(inputFile):
             return SingleLayerPerceptron(input_data)
         if(input_data["networkType"] == "MLPercep"):
             return MultiLayerPerceptron(input_data)
+    if (input_data["networkClass"] == "Recurrant"):
+        if(input_data["networkType"] == "RMLPercep"):
+            return RecurrantMultiLayerPerceptron(input_data)
 
