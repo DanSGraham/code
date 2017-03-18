@@ -56,58 +56,8 @@ class Brain:
                                               "maxEpochs"]
 
 
-            self.gradient_method = standard
-            self.momentum = 0.9
-            self.smoothing = 10 ** (-8)
-            self.pVelocity = []
-            self.intPVelocity = []
-            self.intMomentum = 0.9
-            self.intSmoothing = 10 ** (-8)
-            self.prev_error_mat = []
-            self.delta_factor = 0.9
             self.average_error = []
-            for layer in self.network.network_layers:
-                self.pVelocity.append(np.zeros(layer.weights.shape))
-                self.intPVelocity.append(np.zeros(layer.internal_weights.shape))
-
-            if "gradientMethod" in networkInputFile["trainingProperties"]:
-                train_prop = networkInputFile["trainingProperties"]
-                if train_prop["gradientMethod"] == "Standard":
-                    self.gradient_method = standard
-
-       
-                if train_prop["gradientMethod"] == "Momentum":
-                    self.gradient_method = momentum
-                    self.momentum = train_prop["momentumFactor"]
-
-                if train_prop["gradientMethod"] == "Nesterov":
-                    self.gradient_method = Nesterov_acc
-                    self.momentum = train_prop["momentumFactor"]
-
-                if train_prop["gradientMethod"] == "Adagrad":
-                    self.gradient_method = adagrad
-                    self.smoothing = train_prop["smoothingFactor"]
-
-                if train_prop["gradientMethod"] == "Adadelta":
-                    self.gradient_method = adadelta
-                    self.delta_factor = train_prop["deltaFactor"]
-
-                if train_prop["gradientMethod"] == "RMSprop":
-                    self.gradient_method = RMSprop
-                    self.delta_factor = train_prop["deltaFactor"]
-
-                if train_prop["gradientMethod"] == "Adam":
-                    self.gradient_method = adam
-                    self.momentum = train_prop["momentumFactor"]
-
-                if train_prop["gradientMethod"] == "gradientNoise":
-                    self.gradient_method = gradient_noise
-                    self.momentum = train_prop["momentumFactor"]
-
             self.training_method = stochastic_train
-
-        if networkInputFile["networkClass"] == "Recurrant":
-            self.training_method = recurrant_stochastic_train
 
         if "trainingSet" in networkInputFile:
             self.trainingSet = networkInputFile["trainingSet"]
@@ -144,9 +94,7 @@ class Brain:
     def predict(self, inputSet):
 
         """Predicts an output based on the trained values"""
-        output = self.network.calculate(inputSet)
-        self.network.reset_memory()
-        return output
+        return self.network.calculate(inputSet)
 
     def evolve(self):
 
@@ -170,7 +118,8 @@ def batch_train(brain, input_set, output_set, batch_size, epochs=1):
     for k in range(leftover_data):
         network_output = network.calculate(input_set[upper_limit + k])
         Tot_E = network.correction(output_set[upper_limit + k])
-    network.adjustment(leftover_data)
+    if leftover_data != 0:
+        network.adjustment(leftover_data)
     return True
 
 def recurrant_batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
@@ -275,36 +224,11 @@ def single_epoch(
     for j in range(
             int(len(input_matrix) * train_to_test_ratio), len(input_matrix)):
         network.calculate(input_matrix[index_list[j]])
-        w_err, err_val, Tot_E = network.correction(output_matrix[index_list[j]])
+        Tot_E = network.correction(output_matrix[index_list[j]])
         tot_SSE += Tot_E
 
     return tot_SSE
 
-def recurrant_single_epoch(
-        brain, input_matrix, output_matrix, 
-        minibatch_size, train_factor, train_to_test_ratio=0.7):
-
-    network = brain.network
-    #Trains a single epoch.
-    in_copy = []
-    out_copy = []
-    index_list = range(len(input_matrix))
-    random.shuffle(index_list)
-    for i in range(int(len(input_matrix) * train_to_test_ratio)):
-        in_copy.append(np.copy(input_matrix[index_list[i]]))
-        out_copy.append(np.copy(output_matrix[index_list[i]]))
-    recurrant_batch_train(brain, in_copy, out_copy, minibatch_size, train_factor)
-    #Determine error in test set. 
-    tot_SSE = 0.0
-    for j in range(
-            int(len(input_matrix) * train_to_test_ratio), len(input_matrix)):
-        network.calculate(input_matrix[index_list[j]])
-        w_err, w_int_err, err_val, Tot_E = network.correction(output_matrix[index_list[j]])
-        tot_SSE += Tot_E
-
-    return tot_SSE
-    
-    
 def stochastic_train(
         brain, input_set, output_set, 
         batch_size, train_factor, max_epochs):
@@ -313,17 +237,6 @@ def stochastic_train(
     SSE_list = []
     for i in range(max_epochs):
         SSE_list.append(single_epoch(
-            brain, input_set, output_set, batch_size, train_factor))
-    return SSE_list
-
-def recurrant_stochastic_train(
-        brain, input_set, output_set, 
-        batch_size, train_factor, max_epochs):
-
-    network = brain.network 
-    SSE_list = []
-    for i in range(max_epochs):
-        SSE_list.append(recurrant_single_epoch(
             brain, input_set, output_set, batch_size, train_factor))
     return SSE_list
 

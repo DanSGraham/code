@@ -22,10 +22,7 @@ class NeuralNetwork(object):
 
     def __init__(self, input_dict):
 
-        self.optimization = "backpropagation"
         self.use_bias = True
-        self.activation_fxns = input_dict["networkProperties"][
-            "activationFunctions"]
 
         self.properties = input_dict["networkProperties"]
         if "slopeParameter" in self.properties:
@@ -34,8 +31,9 @@ class NeuralNetwork(object):
         if "useBias" in self.properties:
             self.use_bias = self.properties["useBias"]
 
-        if "optimizationMethod" in self.properties:
-            self.optimization = self.properties["optimizationMethod"]
+
+        self.train_properties = input_dict["trainingProperties"]
+
 
     def calculate(self, input_data):
 
@@ -144,32 +142,63 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
         self.num_output_neurons = self.properties["outputSize"]
         self.network_layers = []
+        self.slope_param = 1.0
 
-        input_layer = nl.FFInputLayer((self.input_size, 1), (self.input_size, 1))
+        #Training Info
+        self.train_factor = 1.0
+        self.momentum = 0.9
+        self.smoothing = 10 ** (-8)
+        self.delta_factor = 0.9
+
+        if "trainingFactor" in self.train_properties:
+            self.train_factor = self.train_properties["trainingFactor"]
+        if "gradientMethod" in self.train_properties:
+            self.gradient_method = self.train_properties["gradientMethod"]
+
+        if "momentumFactor" in self.train_properties:
+            self.momentum = self.train_properties["momentumFactor"]
+        
+         
+        input_activation = "Linear"
+        if "activationFunction" in self.properties["inputLayer"]:
+            input_activation = self.properties["inputLayer"]["activationFunction"]
+
+        input_layer = nl.FFInputLayer((self.input_size, 1), (self.input_size, 1), input_activation, self.gradient_method, self.train_factor, self.momentum, self.smoothing, self.delta_factor, self.slope_param, self.use_bias)
         self.network_layers.append(input_layer)
 
         temp_inputs = self.input_size
+
+        #HiddenLayer Info
+        if "activationFunctions" in self.properties["hiddenLayers"]:
+            hidden_activation = self.properties["hiddenLayers"]["activationFunctions"]
+        else:
+            hidden_activation = "Sigmoid"
+            
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
+            if type(hidden_activation) == list:
+                hidden_activation_unit = hidden_activation[i]
+            else:
+                hidden_activation_unit = hidden_activation
             hidden_layer = nl.FFHiddenLayer((layer_size, temp_inputs), 
-                                       (layer_size, 1))
+                                       (layer_size, 1), hidden_activation_unit, self.gradient_method, self.train_factor, self.momentum, self.smoothing, self.delta_factor, self.slope_param, self.use_bias)
 
             self.network_layers.append(hidden_layer)
             temp_inputs = layer_size
 
         #Create output layer:
+        output_activation = "Linear"
+        cost_fxn = "Quadratic"
+        if "activationFunction" in self.properties["outputLayer"]:
+            output_activation = self.properties["outputLayer"]["activationFunction"]
+
+        if "costFunction" in self.properties["outputLayer"]:
+            cost_fxn = self.properties["outputLayer"]["costFunction"]
+
         output_layer = nl.FFOutputLayer((self.num_output_neurons, temp_inputs), 
-                                      (self.num_output_neurons, 1), 
-                                      activation_fxn=self.activation_fxns[-1])
+                                      (self.num_output_neurons, 1), output_activation, self.gradient_method, cost_fxn, self.train_factor, self.momentum, self.smoothing, self.delta_factor, self.slope_param, self.use_bias)
 
         self.network_layers.append(output_layer)
-
-        #Establish the connections
-        for i in range(len(self.network_layers)-2, -1, -1):
-            self.network_layers[i].connect_next_layer(self.network_layers[i + 1])
-
-        for j in range(1, len(self.network_layers)):
-            self.network_layers[j].connect_prev_layer(self.network_layers[j - 1])
 
     def calculate(self, input_values):
 
@@ -185,9 +214,10 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         #Generate the error matrices to make adjustments.
         #Iterate backwards through layers calculating error.
         #OutputError first
-        err, total_err = self.network_layers[-1].correction(target_values)
+        err, total_err = self.network_layers[-1].grad_correction(target_values)
         for i in range((len(self.network_layers) - 2), -1, -1):
-            err, t_e = self.network_layers[i].correction(err)
+            err, t_e = self.network_layers[i].grad_correction(
+                np.dot(self.network_layers[i + 1].weights.T, err))
 
         return total_err
 
@@ -222,35 +252,75 @@ class RecurrantMultiLayerPerceptron(RNeuralNetwork):
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
         self.num_output_neurons = self.properties["outputSize"]
         self.network_layers = []
+        self.slope_param = 1.0
 
-        input_layer = nl.RInputLayer(
-            (self.input_size, 1), (self.input_size, 1))
+        #Training Info
+        self.train_factor = 1.0
+        self.momentum = 0.9
+        self.smoothing = 10 ** (-8)
+        self.delta_factor = 0.9
+        backprop_trunc = float("inf")
+        
+        
+        if "trainingFactor" in self.train_properties:
+            self.train_factor = self.train_properties["trainingFactor"]
+        if "gradientMethod" in self.train_properties:
+            self.gradient_method = self.train_properties["gradientMethod"]
+
+        if "momentumFactor" in self.train_properties:
+            self.momentum = self.train_properties["momentumFactor"]
+        
+         
+        input_activation = "Linear"
+        if "activationFunction" in self.properties["inputLayer"]:
+            input_activation = self.properties["inputLayer"]["activationFunction"]
+
+        input_layer = nl.RInputLayer((self.input_size, 1), 
+            (self.input_size, 1), input_activation, self.gradient_method, 
+            self.train_factor, self.momentum, self.smoothing, 
+            self.delta_factor, self.slope_param, self.use_bias, backprop_trunc)
+
         self.network_layers.append(input_layer)
 
         temp_inputs = self.input_size
+
+        #HiddenLayer Info
+        if "activationFunctions" in self.properties["hiddenLayers"]:
+            hidden_activation = self.properties["hiddenLayers"]["activationFunctions"]
+        else:
+            hidden_activation = "Sigmoid"
+            
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
+            if type(hidden_activation) == list:
+                hidden_activation_unit = hidden_activation[i]
+            else:
+                hidden_activation_unit = hidden_activation
             hidden_layer = nl.RHiddenLayer((layer_size, temp_inputs), 
-                                       (layer_size, 1))
+                (layer_size, 1), hidden_activation_unit, self.gradient_method,
+                self.train_factor, self.momentum, self.smoothing, 
+                self.delta_factor, self.slope_param, self.use_bias, 
+                backprop_trunc)
 
             self.network_layers.append(hidden_layer)
             temp_inputs = layer_size
 
         #Create output layer:
+        output_activation = "Linear"
+        cost_fxn = "Quadratic"
+        if "activationFunction" in self.properties["outputLayer"]:
+            output_activation = self.properties["outputLayer"]["activationFunction"]
+
+        if "costFunction" in self.properties["outputLayer"]:
+            cost_fxn = self.properties["outputLayer"]["costFunction"]
+
         output_layer = nl.ROutputLayer((self.num_output_neurons, temp_inputs), 
-                                      (self.num_output_neurons, 1), 
-                                      activation_fxn=self.activation_fxns[-1])
+            (self.num_output_neurons, 1), output_activation,
+            self.gradient_method, cost_fxn, self.train_factor, self.momentum, 
+            self.smoothing, self.delta_factor, self.slope_param, self.use_bias,
+            backprop_trunc)
 
         self.network_layers.append(output_layer)
-
-        #Establish the connections
-        for i in range(len(self.network_layers)-2, -1, -1):
-            self.network_layers[i].connect_next_layer(
-                self.network_layers[i + 1])
-
-        for j in range(1, len(self.network_layers)):
-            self.network_layers[j].connect_prev_layer(
-                self.network_layers[j - 1])
 
     def calculate(self, input_values):
 
@@ -259,45 +329,33 @@ class RecurrantMultiLayerPerceptron(RNeuralNetwork):
         for layer in self.network_layers:
             data_output = layer.activate(self.data_layers[-1])
             self.data_layers.append(data_output)
+
         return self.data_layers[-1] 
 
     def correction(self, target_values):
         
         #Generate the error matrices to make adjustments.
         #Iterate backwards through layers calculating error.
-        self.error_list = []    #This list must be flipped around at the end.
-        self.weights_error = [] #This must also be flipped
-        self.internal_weights_error = []
         #OutputError first
-        w_err, int_w_err, err, total_err = (
-            self.network_layers[-1].correction(target_values))
-        self.error_list.append(err)
-        self.weights_error.append(w_err)
-        self.internal_weights_error.append(int_w_err)
-        for i in range((len(self.network_layers) - 2), -1, -1):
-            w_err, int_w_err, err, t_e = (
-                self.network_layers[i].correction(self.error_list[-1]))
-            self.error_list.append(err)
-            self.weights_error.append(w_err)
-            self.internal_weights_error.append(int_w_err)
+        err, total_err = (
+            self.network_layers[-1].grad_correction(target_values))
 
-        self.error_list = list(reversed(self.error_list))
-        self.weights_error = list(reversed(self.weights_error))
-        self.internal_weights_error = list(
-            reversed(self.internal_weights_error))
-        return (self.weights_error, self.internal_weights_error, 
-            self.error_list,  total_err)
+        for i in range((len(self.network_layers) - 2), -1, -1):
+            err, t_e = (self.network_layers[i].grad_correction(
+                np.dot(self.network_layers[i + 1].weights.T, err)))
+
+        self.reset_memory()
+        return total_err
 
     def reset_memory(self):
         for layer in self.network_layers:
             layer.refresh_memory()
 
-    def adjustment(self, weights_adjust, internal_weights_adjust, bias_adjust):
+    def adjustment(self, batch_size):
 
         #Adjust the weights and biases to correct network.
         for i in range(len(self.network_layers)):
-            self.network_layers[i].adjust(weights_adjust[i], 
-                internal_weights_adjust[i], bias_adjust[i])
+            self.network_layers[i].adjust(batch_size)
 
 
 

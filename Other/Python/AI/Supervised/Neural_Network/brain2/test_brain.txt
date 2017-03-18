@@ -1,20 +1,28 @@
 {
     "_comment": "input file for creating a new NN",
-    "networkClass":"Feedforward",
-    "networkType": "MLPercep",
+    "networkClass":"Recurrant",
+    "networkType": "RMLPercep",
     "networkProperties" : {
-        "costFunction": "Quadratic",
-        "numberHiddenLayers": 1,
-        "hiddenLayerSizes": [10],
-        "activationFunctions": ["Linear", "Sigmoid", "Linear"],
+        "numberHiddenLayers" : 1,
+        "hiddenLayerSizes" : [10],
         "inputSize" : 1,
-        "outputSize" : 1
+        "outputSize" : 1,
+        "inputLayer" : {
+            "activationFunction" : "Linear"
+        },
+        "hiddenLayers" : {
+            "activationFunctions" : ["Sigmoid"]
+        },
+        "outputLayer" : {
+            "activationFunction" : "Linear"
+        },
+        "costFunction": "Quadratic"
     },
     "trainingMethod": "Stochastic",
     "trainingProperties": {
         "trainingFactor": 0.03,
         "batchSize": 1,
-        "maxEpochs": 10,
+        "maxEpochs": 100,
         "gradientMethod": "Momentum",
         "momentumFactor": 0.9
     },

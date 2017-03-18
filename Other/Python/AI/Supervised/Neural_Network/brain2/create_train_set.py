@@ -3,7 +3,7 @@ import random
 #Create training set file to test a NN.
 
 
-sizeOfDataSet = 100
+sizeOfDataSet = 1000
 functionToTest = math.sin
 input_data = []
 output_data = []
