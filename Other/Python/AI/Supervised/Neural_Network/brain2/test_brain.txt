@@ -1,7 +1,7 @@
 {
     "_comment": "input file for creating a new NN",
-    "networkClass": "Recurrant",
-    "networkType": "RMLPercep",
+    "networkClass":"Feedforward",
+    "networkType": "MLPercep",
     "networkProperties" : {
         "costFunction": "Quadratic",
         "numberHiddenLayers": 1,

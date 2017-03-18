@@ -154,66 +154,23 @@ class Brain:
 
 ##----------------------Training Methods---------------------------------------
 
-def batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
+def batch_train(brain, input_set, output_set, batch_size, epochs=1):
 
     network = brain.network
     leftover_data = len(input_set) % batch_size
     upper_limit = len(input_set) - leftover_data
 
     for i in range(0, upper_limit, batch_size):
-        weights_error = []
-        bias_error = []
-
-        for layer in network.network_layers:
-            weights_error.append(np.zeros(layer.weights.shape))
-            bias_error.append(np.zeros(layer.bias.shape))
 
         for j in range(batch_size):
             network_output = network.calculate(input_set[i + j])
-            w_err_tmp, b_err_tmp, Tot_E = network.correction(output_set[i + j])
-            for n in range(len(weights_error)):
-                weights_error[n] += w_err_tmp[n]
-                bias_error[n] += b_err_tmp[n]
-
-        weights_error = brain.gradient_method(
-            weights_error, (float(brain.tFactor)/batch_size), 
-            brain.pVelocity, brain.momentum, brain.smoothing)
-
-
-        brain.pVelocity = weights_error
-
-        for n in range(len(weights_error)):
-            bias_error[n] = np.multiply(
-                (float(train_factor) / batch_size), bias_error[n])
-        
-        network.adjustment(weights_error, bias_error)
+            Tot_E = network.correction(output_set[i + j])
+        network.adjustment(batch_size)
      
-    weights_error = []
-    bias_error = []
-
-    for layer in network.network_layers:
-        weights_error.append(np.zeros(layer.weights.shape))
-        bias_error.append(np.zeros(layer.bias.shape))
-
     for k in range(leftover_data):
         network_output = network.calculate(input_set[upper_limit + k])
-        w_err_tmp, b_err_tmp, Tot_E = network.correction(
-                                        output_set[upper_limit + k])
-        for n in range(len(weights_error)):
-            weights_error[n] += w_err_tmp[n]
-            bias_error[n] += b_err_tmp[n]
-        
-        weights_error = brain.gradient_method(
-            weights_error, (float(brain.tFactor)/batch_size), 
-            brain.pVelocity, brain.momentum, brain.smoothing)
-
-        brain.pVelocity = weights_error
-
-        for n in range(len(weights_error)):
-            bias_error[n] = np.multiply(
-                (float(train_factor) / batch_size), bias_error[n])
-
-    network.adjustment(weights_error, bias_error)
+        Tot_E = network.correction(output_set[upper_limit + k])
+    network.adjustment(leftover_data)
     return True
 
 def recurrant_batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
@@ -369,40 +326,7 @@ def recurrant_stochastic_train(
         SSE_list.append(recurrant_single_epoch(
             brain, input_set, output_set, batch_size, train_factor))
     return SSE_list
-##--------------------------Gradient Descent Improvements----------------------
-#Found here: http://sebastianruder.com/optimizing-gradient-descent/ 
-def standard(weight_error, train_factor, prev_velocity=1, momentum_factor=1, smoothing_factor=1):
-    corr_err = [] 
-    for weight in weight_error:
-        corr_err.append(np.multiply(train_factor, weight))
-    return corr_err
 
-def momentum(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor=1):
-
-    corr_err = []
-    for i in range(len(weight_error)):
-        corr_err.append(np.multiply(momentum_factor, prev_velocity[i])
-            + np.multiply(train_factor, weight_error[i]))
-    return corr_err
-
-def Nesterov_acc():
-    pass
-
-def adagrad(weight_error, train_factor, smoothing_factor):
-    #Smoothig factor on the order of 10^-8
-    pass
-
-def adadelta(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor):
-    pass
-
-def RMSprop():
-    pass
-
-def adam():
-    pass
-
-def gradient_noise():
-    pass
 #Brain has attributes, network, braintype.
 
 #Depending on brain type brain can have limited resources.

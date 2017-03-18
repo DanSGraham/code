@@ -145,20 +145,20 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         self.num_output_neurons = self.properties["outputSize"]
         self.network_layers = []
 
-        input_layer = nl.InputLayer((self.input_size, 1), (self.input_size, 1))
+        input_layer = nl.FFInputLayer((self.input_size, 1), (self.input_size, 1))
         self.network_layers.append(input_layer)
 
         temp_inputs = self.input_size
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
-            hidden_layer = nl.HiddenLayer((layer_size, temp_inputs), 
+            hidden_layer = nl.FFHiddenLayer((layer_size, temp_inputs), 
                                        (layer_size, 1))
 
             self.network_layers.append(hidden_layer)
             temp_inputs = layer_size
 
         #Create output layer:
-        output_layer = nl.OutputLayer((self.num_output_neurons, temp_inputs), 
+        output_layer = nl.FFOutputLayer((self.num_output_neurons, temp_inputs), 
                                       (self.num_output_neurons, 1), 
                                       activation_fxn=self.activation_fxns[-1])
 
@@ -184,26 +184,18 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         
         #Generate the error matrices to make adjustments.
         #Iterate backwards through layers calculating error.
-        self.error_list = []    #This list must be flipped around at the end.
-        self.weights_error = [] #This must also be flipped
         #OutputError first
-        w_err, err, total_err = self.network_layers[-1].correction(target_values)
-        self.error_list.append(err)
-        self.weights_error.append(w_err)
+        err, total_err = self.network_layers[-1].correction(target_values)
         for i in range((len(self.network_layers) - 2), -1, -1):
-            w_err, err, t_e = self.network_layers[i].correction(self.error_list[-1])
-            self.error_list.append(err)
-            self.weights_error.append(w_err)
+            err, t_e = self.network_layers[i].correction(err)
 
-        self.error_list = list(reversed(self.error_list))
-        self.weights_error = list(reversed(self.weights_error))
-        return (self.weights_error, self.error_list,  total_err)
+        return total_err
 
-    def adjustment(self, weights_adjust, bias_adjust):
+    def adjustment(self, batch_size):
 
         #Adjust the weights and biases to correct network.
         for i in range(len(self.network_layers)):
-            self.network_layers[i].adjust(weights_adjust[i], bias_adjust[i])
+            self.network_layers[i].adjust(batch_size)
 
 
 
