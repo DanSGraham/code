@@ -200,13 +200,15 @@ class MultiLayerPerceptron(FFNeuralNetwork):
 
         self.network_layers.append(output_layer)
 
+
     def calculate(self, input_values):
 
-        #input stimulus is a 1D array in bra form 
-        self.data_layers = [input_values]
+        self.data_layers = [np.array([input_values]).T]
+
         for layer in self.network_layers:
             data_output = layer.activate(self.data_layers[-1])
             self.data_layers.append(data_output)
+
         return self.data_layers[-1] 
 
     def correction(self, target_values):
@@ -214,6 +216,8 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         #Generate the error matrices to make adjustments.
         #Iterate backwards through layers calculating error.
         #OutputError first
+
+        target_values = np.array([target_values]).T
         err, total_err = self.network_layers[-1].grad_correction(target_values)
         for i in range((len(self.network_layers) - 2), -1, -1):
             err, t_e = self.network_layers[i].grad_correction(

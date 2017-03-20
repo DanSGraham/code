@@ -1,12 +1,12 @@
 {
     "_comment": "input file for creating a new NN",
-    "networkClass":"Recurrant",
-    "networkType": "RMLPercep",
+    "networkClass":"Feedforward",
+    "networkType": "MLPercep",
     "networkProperties" : {
         "numberHiddenLayers" : 1,
         "hiddenLayerSizes" : [10],
-        "inputSize" : 1,
-        "outputSize" : 1,
+        "inputSize" : 2,
+        "outputSize" : 2,
         "inputLayer" : {
             "activationFunction" : "Linear"
         },

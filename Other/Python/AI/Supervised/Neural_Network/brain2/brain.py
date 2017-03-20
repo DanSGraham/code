@@ -14,7 +14,7 @@ import neural_network
 
 
 #TODO: 
-#Refactor code to incorporate recursive NNs. The training methods are poorly incorporated
+#Fix errors in layers
 #Add Rprop
 #Integrate Layer objects and refactor code.
 #Docstring
@@ -264,18 +264,18 @@ def compareBrains(data_dict):
 
     #Simple Test 
     print "MY BRAIN RESULTS"
-    in_data = 0.25
-    print test_brain.predict(np.array([in_data]))
+    in_data = [0.25, 0.1]
+    print test_brain.predict(np.array(in_data))
     print test_brain.learn(test_brain.trainingSet[0])
-    print math.sin(in_data)
+    print [math.sin(in_data[0]) - math.sin(in_data[1]), math.sin(in_data[0]) + math.sin(in_data[1])]
     print test_brain.predict(np.array([in_data]))
 
 
     print "PYBRAIN RESULTS"
     #Use Pybrain to compare output results
     #Build pybrain
-    compare_brain = buildNetwork(1, data_dict["networkProperties"]["hiddenLayerSizes"][0], 1, bias=True)
-    print compare_brain.activate([in_data])
+    compare_brain = buildNetwork(2, data_dict["networkProperties"]["hiddenLayerSizes"][0], 2, bias=True)
+    print compare_brain.activate(in_data)
     #Build Dataset
     ds = SupervisedDataSet(1,1)
     trainingFile = test_brain.trainingSet[0] 
@@ -294,8 +294,8 @@ def compareBrains(data_dict):
         trainer.train()
 
     print "EXPECTED VS OUTPUT"
-    print math.sin(in_data)
-    print compare_brain.activate([in_data])
+    print [math.sin(in_data[0]) - math.sin(in_data[1]), math.sin(in_data[0]) + math.sin(in_data[1])]
+    print compare_brain.activate(in_data)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

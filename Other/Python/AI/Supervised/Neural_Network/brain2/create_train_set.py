@@ -9,8 +9,8 @@ input_data = []
 output_data = []
 
 for i in range(sizeOfDataSet):
-    in_val = [random.random()]
-    out_val = [functionToTest(in_val[0])]
+    in_val = [random.random(), random.random()]
+    out_val = [(functionToTest(in_val[0]) - functionToTest(in_val[1])), functionToTest(in_val[0]) + functionToTest(in_val[1])]
     input_data.append(in_val)
     output_data.append(out_val)
 
