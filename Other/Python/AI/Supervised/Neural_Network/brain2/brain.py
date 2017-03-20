@@ -14,9 +14,10 @@ import neural_network
 
 
 #TODO: 
-#Fix errors in layers
-#Add Rprop
-#Integrate Layer objects and refactor code.
+#Test the recurrant properties of the RNN. Try a data set with some recurrance.
+#Seems like it is wrong...
+#Create template input brain file and input file
+#Allow for general layer addition.
 #Docstring
 #Currently going with a 70/30 train to test method.
 #Do ROC analysis for error
@@ -268,7 +269,7 @@ def compareBrains(data_dict):
     print test_brain.predict(np.array(in_data))
     print test_brain.learn(test_brain.trainingSet[0])
     print [math.sin(in_data[0]) - math.sin(in_data[1]), math.sin(in_data[0]) + math.sin(in_data[1])]
-    print test_brain.predict(np.array([in_data]))
+    print test_brain.predict(np.array(in_data))
 
 
     print "PYBRAIN RESULTS"
@@ -277,7 +278,7 @@ def compareBrains(data_dict):
     compare_brain = buildNetwork(2, data_dict["networkProperties"]["hiddenLayerSizes"][0], 2, bias=True)
     print compare_brain.activate(in_data)
     #Build Dataset
-    ds = SupervisedDataSet(1,1)
+    ds = SupervisedDataSet(2,2)
     trainingFile = test_brain.trainingSet[0] 
     with open(trainingFile) as json_file:
         trainingSet = json.load(json_file)
@@ -286,7 +287,7 @@ def compareBrains(data_dict):
     output_vals = trainingSet["outputSet"]
 
     for i in range(len(input_vals)):
-        ds.addSample((input_vals[i][0],), (output_vals[i][0],))
+        ds.addSample((input_vals[i][0],input_vals[i][1]), (output_vals[i][0],output_vals[i][1]))
 
     trainer = BackpropTrainer(compare_brain, ds)
 

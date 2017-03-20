@@ -329,7 +329,7 @@ class RecurrantMultiLayerPerceptron(RNeuralNetwork):
     def calculate(self, input_values):
 
         #input stimulus is a 1D array in bra form 
-        self.data_layers = [input_values]
+        self.data_layers = [np.array([input_values]).T]
         for layer in self.network_layers:
             data_output = layer.activate(self.data_layers[-1])
             self.data_layers.append(data_output)
@@ -341,6 +341,7 @@ class RecurrantMultiLayerPerceptron(RNeuralNetwork):
         #Generate the error matrices to make adjustments.
         #Iterate backwards through layers calculating error.
         #OutputError first
+        target_values = np.array([target_values]).T
         err, total_err = (
             self.network_layers[-1].grad_correction(target_values))
 

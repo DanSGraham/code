@@ -191,6 +191,7 @@ class FFInputLayer(FFLayer):
 
         temp_err = np.multiply(error, 
             self.d_activation_fxn(self.activation_input, self.slope_param))
+
         self.weights_error += np.multiply(temp_err, self.input_vector)
         self.error += temp_err
         return temp_err, None
@@ -227,7 +228,7 @@ class FFHiddenLayer(FFLayer):
         temp_err = np.multiply(error, 
             self.d_activation_fxn(self.activation_input, self.slope_param))
 
-        self.weights_error += np.multiply(temp_err, self.input_vector)
+        self.weights_error += np.multiply(temp_err, self.input_vector.T)
         self.error += temp_err
         return temp_err, None
         
@@ -282,6 +283,7 @@ class FFOutputLayer(FFLayer):
         temp_err = np.multiply(
             self.cost_fxn_grad(self.output, target), 
             self.d_activation_fxn(self.activation_input, self.slope_param))
+
         self.weights_error += np.multiply(temp_err, self.input_vector.T)
         self.error += temp_err
         self.total_error = self.cost_fxn(self.output, target)
@@ -424,7 +426,7 @@ class RHiddenLayer(RLayer):
         temp_error = temp_error_out
         self.error += temp_error
         for k in range(len(self.input_vector), 0, -1):
-            self.weights_error += np.multiply(temp_error, self.input_vector[k-1])
+            self.weights_error += np.multiply(temp_error, self.input_vector[k-1].T)
             self.internal_weights_error += np.multiply(
                 temp_error, self.output[k-1])
             temp_error = np.multiply(temp_error, self.internal_weights)
@@ -486,13 +488,14 @@ class ROutputLayer(RLayer):
         temp_error_out = np.multiply(
             self.cost_fxn_grad(self.output[-1], target), 
             self.d_activation_fxn(self.activation_input[-1], self.slope_param))
+
         temp_error = temp_error_out
         self.error += temp_error
         #Could be incorrect. Should check
         for k in range(len(self.input_vector), 0, -1):
             self.weights_error += np.multiply(temp_error, self.input_vector[k-1].T)
             self.internal_weights_error += np.multiply(
-                temp_error, self.output[k-1].T)
+                temp_error, self.output[k-1])
             temp_error = np.multiply(temp_error, self.internal_weights)
         self.total_error = self.cost_fxn(self.output[-1], target)
         return (temp_error_out, self.total_error)

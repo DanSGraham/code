@@ -8,9 +8,13 @@ functionToTest = math.sin
 input_data = []
 output_data = []
 
-for i in range(sizeOfDataSet):
+in_val = [random.random(), random.random()]
+out_val = [(functionToTest(in_val[0]) - functionToTest(in_val[1])), functionToTest(in_val[0]) + functionToTest(in_val[1])]
+input_data.append(in_val)
+output_data.append(out_val)
+for i in range(1, sizeOfDataSet):
     in_val = [random.random(), random.random()]
-    out_val = [(functionToTest(in_val[0]) - functionToTest(in_val[1])), functionToTest(in_val[0]) + functionToTest(in_val[1])]
+    out_val = [(functionToTest(in_val[0]) - functionToTest(input_data[i -1][1])), functionToTest(input_data[i-1][0]) + functionToTest(in_val[1])]
     input_data.append(in_val)
     output_data.append(out_val)
 
