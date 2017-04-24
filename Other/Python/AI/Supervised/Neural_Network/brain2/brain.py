@@ -16,6 +16,8 @@ import neural_network
 #TODO: 
 #Test the recurrant properties of the RNN. Try a data set with some recurrance.
 #Seems like it is wrong...
+#Add convolution layers
+#Add LSTMN functionality
 #Create template input brain file and input file
 #Allow for general layer addition.
 #Docstring
@@ -43,7 +45,9 @@ class Brain:
             self.tFactor = networkInputFile["trainingProperties"][
                                             "trainingFactor"]
             self.bSize = networkInputFile["trainingProperties"]["batchSize"]
-            self.training_method = batch_train 
+            self.training_method = batch_train
+            if "maxEpochs" in networkInputFile["trainingProperties"]:
+                self.maxEpochs = networkInputFile["trainingProperties"]["maxEpochs"]
         if networkInputFile["trainingMethod"] == "Online":
             self.tFactor = networkInputFile["trainingProperties"][
                                             "trainingFactor"]
@@ -89,7 +93,7 @@ class Brain:
         #Run training method
         return self.training_method(
                 self, input_vals, output_vals, 
-                self.bSize, self.tFactor, self.maxEpochs
+                self.bSize, self.maxEpochs
             )
 
     def predict(self, inputSet):
@@ -104,111 +108,34 @@ class Brain:
 ##----------------------Training Methods---------------------------------------
 
 def batch_train(brain, input_set, output_set, batch_size, epochs=1):
+    total_err_list = []
+    for epoch in range(epochs):
+        network = brain.network
+        leftover_data = len(input_set) % batch_size
+        upper_limit = len(input_set) - leftover_data
 
-    network = brain.network
-    leftover_data = len(input_set) % batch_size
-    upper_limit = len(input_set) - leftover_data
+        for i in range(0, upper_limit, batch_size):
 
-    for i in range(0, upper_limit, batch_size):
-
-        for j in range(batch_size):
-            network_output = network.calculate(input_set[i + j])
-            Tot_E = network.correction(output_set[i + j])
-        network.adjustment(batch_size)
+            for j in range(batch_size):
+                network_output = network.calculate(input_set[i + j])
+                Tot_E = network.correction(output_set[i + j])
+            network.adjustment(batch_size)
      
-    for k in range(leftover_data):
-        network_output = network.calculate(input_set[upper_limit + k])
-        Tot_E = network.correction(output_set[upper_limit + k])
-    if leftover_data != 0:
-        network.adjustment(leftover_data)
-    return True
+        for k in range(leftover_data):
+            network_output = network.calculate(input_set[upper_limit + k])
+            Tot_E = network.correction(output_set[upper_limit + k])
+        if leftover_data != 0:
+            network.adjustment(leftover_data)
+        total_err_list.append(Tot_E) 
+    return total_err_list
 
-def recurrant_batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
+def online_train(brain, input_set, output_set, batch_size, epochs=1):
 
-    network = brain.network
-    leftover_data = len(input_set) % batch_size
-    upper_limit = len(input_set) - leftover_data
-
-    for i in range(0, upper_limit, batch_size):
-        weights_error = []
-        int_weights_error = []
-        bias_error = []
-
-        for layer in network.network_layers:
-            weights_error.append(np.zeros(layer.weights.shape))
-            int_weights_error.append(np.zeros(layer.internal_weights.shape))
-            bias_error.append(np.zeros(layer.bias.shape))
-
-        for j in range(batch_size):
-            network_output = network.calculate(input_set[i + j])
-            w_err_tmp, int_w_err_tmp, b_err_tmp, Tot_E = (
-                network.correction(output_set[i + j]))
-            network.reset_memory()
-            for n in range(len(weights_error)):
-                weights_error[n] += w_err_tmp[n]
-                int_weights_error[n] += int_w_err_tmp[n]
-                bias_error[n] += b_err_tmp[n]
-
-        weights_error = brain.gradient_method(
-            weights_error, (float(brain.tFactor)/batch_size), 
-            brain.pVelocity, brain.momentum, brain.smoothing)
-
-        int_weights_error = brain.gradient_method(
-            int_weights_error, (float(brain.tFactor)/batch_size),
-            brain.intPVelocity, brain.intMomentum, brain.intSmoothing)
-
-        brain.pVelocity = weights_error
-        brain.intPVelocity = int_weights_error
-
-        for n in range(len(weights_error)):
-            bias_error[n] = np.multiply(
-                (float(train_factor) / batch_size), bias_error[n])
-        
-        network.adjustment(weights_error, int_weights_error, bias_error)
-     
-    weights_error = []
-    int_weights_error = []
-    bias_error = []
-
-    for layer in network.network_layers:
-        weights_error.append(np.zeros(layer.weights.shape))
-        int_weights_error.append(np.zeros(layer.internal_weights.shape))
-        bias_error.append(np.zeros(layer.bias.shape))
-
-    for k in range(leftover_data):
-        network_output = network.calculate(input_set[upper_limit + k])
-        w_err_tmp, int_w_err_tmp, b_err_tmp, Tot_E = network.correction(
-                                        output_set[upper_limit + k])
-        for n in range(len(weights_error)):
-            weights_error[n] += w_err_tmp[n]
-            int_weights_error[n] += int_w_err_tmp[n]
-            bias_error[n] += b_err_tmp[n]
-        
-        weights_error = brain.gradient_method(
-            weights_error, (float(brain.tFactor)/batch_size), 
-            brain.pVelocity, brain.momentum, brain.smoothing)
-
-        int_weights_error = brain.gradient_method(
-            int_weights_error, (float(brain.tFactor)/batch_size),
-            brain.intPVelocity, brain.intMomentum, brain.intSmoothing)
-
-        brain.pVelocity = weights_error
-        brain.intPVelocity = int_weights_error
-
-        for n in range(len(weights_error)):
-            bias_error[n] = np.multiply(
-                (float(train_factor) / batch_size), bias_error[n])
-
-    network.adjustment(weights_error, int_weights_error, bias_error)
-    return True
-
-def online_train(brain, input_set, output_set, batch_size, train_factor, epochs=1):
-
-    return batch_train(brain, input_set, output_set, 1, train_factor, epochs)
+    return batch_train(brain, input_set, output_set, 1, epochs)
 
 def single_epoch(
         brain, input_matrix, output_matrix, 
-        minibatch_size, train_factor, train_to_test_ratio=0.7):
+        minibatch_size, train_to_test_ratio=0.7):
 
     network = brain.network
     #Trains a single epoch.
@@ -232,13 +159,13 @@ def single_epoch(
 
 def stochastic_train(
         brain, input_set, output_set, 
-        batch_size, train_factor, max_epochs):
+        batch_size,  max_epochs):
 
     network = brain.network 
     SSE_list = []
     for i in range(max_epochs):
         SSE_list.append(single_epoch(
-            brain, input_set, output_set, batch_size, train_factor))
+            brain, input_set, output_set, batch_size))
     return SSE_list
 
 #Brain has attributes, network, braintype.
@@ -266,10 +193,25 @@ def compareBrains(data_dict):
     #Simple Test 
     print "MY BRAIN RESULTS"
     in_data = [0.25, 0.1]
+    test_brain.predict(np.array(in_data))
+    test_brain.predict(np.array(in_data))
+    test_brain.predict(np.array(in_data))
+    test_brain.predict(np.array(in_data))
     print test_brain.predict(np.array(in_data))
+    in_data2 = [random.random(), random.random()]
+    test_brain.predict(np.array(in_data))
     print test_brain.learn(test_brain.trainingSet[0])
     print [math.sin(in_data[0]) - math.sin(in_data[1]), math.sin(in_data[0]) + math.sin(in_data[1])]
-    print test_brain.predict(np.array(in_data))
+    test_brain.predict(np.array(in_data))
+    in_data2 = [random.random(), random.random()]
+    test_brain.predict(np.array(in_data2))
+    in_data2 = [random.random(), random.random()]
+    test_brain.predict(np.array(in_data2))
+    in_data2 = [random.random(), random.random()]
+    test_brain.predict(np.array(in_data2))
+    in_data2 = [random.random(), random.random()]
+    print test_brain.predict(np.array(in_data2))
+    in_data2 = [random.random(), random.random()]
 
 
     print "PYBRAIN RESULTS"

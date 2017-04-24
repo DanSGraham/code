@@ -16,14 +16,15 @@ def momentum(weight_error, train_factor, prev_velocity, momentum_factor, smoothi
 def Rprop():
     pass
 
-def Nesterov_acc():
+def Nesterov_acc(we):
+    #This one requires the gradient method. Needs another parameter. Maybe fix somehow?
     pass
 
-def adagrad(weight_error, train_factor, smoothing_factor):
+def adagrad(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor, lookback_limit):
     #Smoothig factor on the order of 10^-8
     pass
 
-def adadelta(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor):
+def adadelta(weight_error, train_factor, prev_velocity, momentum_factor, smoothing_factor, lookback_limit):
     pass
 
 def RMSprop():

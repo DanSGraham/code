@@ -4,7 +4,7 @@
     "networkType": "RMLPercep",
     "networkProperties" : {
         "numberHiddenLayers" : 1,
-        "hiddenLayerSizes" : [10],
+        "hiddenLayerSizes" : [100],
         "inputSize" : 2,
         "outputSize" : 2,
         "inputLayer" : {
@@ -18,10 +18,10 @@
         },
         "costFunction": "Quadratic"
     },
-    "trainingMethod": "Stochastic",
+    "trainingMethod": "Batch",
     "trainingProperties": {
         "trainingFactor": 0.03,
-        "batchSize": 1,
+        "batchSize": 15,
         "maxEpochs": 100,
         "gradientMethod": "Momentum",
         "momentumFactor": 0.9
