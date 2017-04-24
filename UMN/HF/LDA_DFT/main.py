@@ -128,6 +128,8 @@ def internuclearPotentialElement(basis_1, basis_2):
             coeff = (basis_1.norm_coeff[i] * basis_2.norm_coeff[j] * 
                 (-2. * math.pi / p) * basis_1.nuclearCharge)
             exponent = (-q * (basis_2.position - basis_1.position) ** (2.))
+
+            #Something wrong after here.
             Rp = ((basis_1.aparams[i] * basis_1.position + 
                 basis_2.aparams[j] * basis_2.position) / p )
             fun_0 = F_0(p * (Rp - basis_1.position) ** 2.)
