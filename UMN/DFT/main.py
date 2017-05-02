@@ -1,10 +1,13 @@
 #A program to calculate the energy of a diatomic molecule from Hartree-Fock methods
 #By Daniel Graham
 
-#TODO: Add DFT Part
+#TODO: Change integration
 
 import numpy as np
 import math
+import scipy
+from scipy.integrate import nquad
+
 
 class basis_function:
 
@@ -23,6 +26,7 @@ class basis_function:
 H_intNucDist = 0.74
 atomicCharge = 1.
 numElectrons = 2
+int_bound = 4.
 
 #A function to normalize the eigenfxns
 #Input: Contracted basis set alpha parameters
@@ -222,13 +226,12 @@ def coeffMatrix(orthoganalizationMatrix, fockMatrix):
 	orthonormalFock = (orthoganalizationMatrix.T) * fockMatrix * orthoganalizationMatrix
 	coeffValues, coeffOrtho = np.linalg.eigh(orthonormalFock)
 	actualCoeff = orthoganalizationMatrix * coeffOrtho
-	return actualCoeff
+	return actualCoeff, coeffValues
  
 #A function to determine the density matrix
 #Input: The Coeffecient matrix
 #Output: The densityMatrix
 def densityMatrix(coeffMatrix, numElectrons):
-	#For now assume that the 1 and 3rd orbitals are the lowest two energy, but ideal method is to have that pre determined.
 	#Szabo pg. 139, eqn. 3.145
 	densityMatrix = np.copy(coeffMatrix)
 	densityMatrix.fill(0)
@@ -237,6 +240,165 @@ def densityMatrix(coeffMatrix, numElectrons):
 		densityMatrix += np.multiply(prodMat, prodMat.T)
 		
 	return densityMatrix * 2
+
+#A function to multiply two wfs
+#Input: xyz coordinates, basis1 basis2
+#Output: single value
+def mult_wf(x,y,z, basis1, basis2):
+
+    expVar_1 = (x ** 2. + y ** 2. + (z - basis1.position) ** 2.)
+    expVar_2 = (x ** 2. + y ** 2. + (z - basis2.position) ** 2.)
+    expVal_1 = np.multiply(-expVar_1, basis1.aparams) 
+    expVal_2 = np.multiply(-expVar_2, basis2.aparams) 
+    expNum_1 = np.exp(expVal_1)
+    expNum_2 = np.exp(expVal_2)
+    wf_1 = np.sum(np.multiply(basis1.norm_coeff, expNum_1))
+    wf_2 = np.sum(np.multiply(basis2.norm_coeff, expNum_2))
+    return wf_1 * wf_2
+
+
+#A function to determine the density at a certain point
+#Input: x, y, z coords, dMatrix, basis sets
+#Output: Charge density
+def density(x, y, z, dMatrix, basis_sets):
+    #Assumes spherical symmetry 
+    elementVal = 0
+    for i in range(len(basis_sets)):
+        for j in range(len(basis_sets)):
+            elementVal += dMatrix[i][j] * mult_wf(x, y, z, basis_sets[i], basis_sets[j])
+
+    return elementVal
+
+#A function to determine the density at a certain point
+#Input: x, y, z coords, dMatrix, basis sets
+#Output: Charge density
+def density2(x, z, dMatrix, basis_sets):
+    #Assumes spherical symmetry 
+    elementVal = 0
+    y = 0
+    for i in range(len(basis_sets)):
+        for j in range(len(basis_sets)):
+            elementVal += x * dMatrix[i][j] * mult_wf(x, y, z, basis_sets[i], basis_sets[j])
+
+    return elementVal
+
+#A function to determine the exchange and correlation energy value
+
+def ExCorrE(x, y, z, dMatrix, basis_sets):
+    d = density(x, y, z, dMatrix, basis_sets)
+    exchangeE = 0
+    correlationE = 0
+    r = ((3. / (4. * math.pi * d))) ** (1./3.)
+    exchangeE = (-0.4581652933 * d) / r
+    correlationE = -(0.4432655957 * d) / (r + 7.8)
+    return exchangeE + correlationE
+
+def secondEnergyTerm(x, y, z, dMatrix, basis_sets):
+    return ExCorrPotential(x, y, z, dMatrix, basis_sets) * density(x, y, z, dMatrix, basis_sets)
+
+def thirdEnergyTerm(dMatrix, eeRepulsionMatrix):
+
+    val = 0
+    for i in range(len(dMatrix[0])):
+        for j in range(len(dMatrix[0])):
+            for k in range(len(dMatrix)):
+                for m in range(len(dMatrix)):
+                    val += dMatrix[i][k] * dMatrix[j][m] * eeRepulsionMatrix[i][k][j][m]
+
+    return val * 0.5
+
+def dftEnergyIntegral(x, z, dMatrix, basis_sets):
+    y = 0
+    return x * (ExCorrE(x, y, z, dMatrix, basis_sets) - secondEnergyTerm(x,y,z, dMatrix, basis_sets))
+
+def dftEnergy(coeffMatrix, dMatrix, basis_sets, eeRepulsionMatrix):
+    return numElectrons * coeffMatrix[0] + 2 * math.pi * 2 * nquad(dftEnergyIntegral, [[0, int_bound], [-int_bound, int_bound]], args=(dMatrix, basis_sets))[0] - thirdEnergyTerm(dMatrix, eeRepulsionMatrix)
+    
+
+#A function to determine the exchange and correlation energy
+#Input: Density Matrix, basis sets
+#Output: Exchange-Correlation energy matrix
+def ExCorrPotential(x, y, z, dMatrix, basis_sets):
+    d_13 = density(x, y, z, dMatrix, basis_sets) ** (1./3.)
+    firstVal = (-(4./3.) * (0.4581652933 / ((3. / (4. * math.pi)) ** (1./3.))) * d_13)
+    secondVal = -(0.4432655957) * ((((3. / (4. * math.pi)) ** (1./3.)) * (1./d_13) + 7.795360477) ** -1)
+    thirdVal = (1 + (1./3 * d_13) * (3./ (4. * math.pi)) ** (1./3.) * -(secondVal / 0.44))
+    return firstVal + secondVal * thirdVal
+
+#A function to define what function I need to integrate over x, y, and z
+#Input: xyz coord, dmatrix, basis set list, two basis sets integrated in respect to
+#Output: Single value
+def integral_function(x, z, dMatrix, basis_sets, basis1, basis2):
+    #Assumes circular symmetry in x and y.
+    y = 0
+    return x * mult_wf(x, y, z, basis1, basis2) * ExCorrPotential(x, y, z, dMatrix, basis_sets)
+
+#A function to define what function I need to integrate over x, y, and z
+#Input: xyz coord, dmatrix, basis set list, two basis sets integrated in respect to
+#Output: Single value
+"""def integral_function(x, y, z, dMatrix, basis_sets, basis1, basis2):
+    return mult_wf(x, y, z, basis1, basis2) * ExCorrPotential(x, y, z, dMatrix, basis_sets)"""
+
+
+#A function to return the exchange and correlation potential matrix
+#Input: Density Matrix, basis sets
+#Output: exchange and correlation potential matrix
+def ExCorrPMatrix(dMatrix, basis_sets):
+    ExCorrPMatrix = np.copy(dMatrix)
+    ExCorrPMatrix.fill(0)
+    for i in range(len(basis_sets)):
+        for j in range(len(basis_sets)):
+            #Specific to HN Diatomic
+            if j == i and i > 1:
+                ExCorrPMatrix[i][j] = ExCorrPMatrix[i - 2][j - 2]
+            if i == 3 and j == 0:
+                ExCorrPMatrix[i][j] = ExCorrPMatrix[i-1][j+1]
+            if i == 3 and j == 2:
+                ExCorrPMatrix[i][j] = ExCorrPMatrix[i-2][j-2] 
+            if j < i:
+                ExCorrPMatrix[i][j] = ExCorrPMatrix[j][i]
+            else:
+                int_function = integral_function
+                ExCorrPMatrix[i][j] = scipy_integral(int_function, dMatrix, basis_sets, basis_sets[i], basis_sets[j])
+                #ExCorrPMatrix[i][j] = num_integrate(int_function, dMatrix, basis_sets, basis_sets[i], basis_sets[j], H_intNucDist)
+
+    return ExCorrPMatrix
+
+#A function to integrade using scipy
+#Input: integral function
+#Output: integral value
+def scipy_integral(function_input, dMatrix, basis_sets, basis_sets1, basis_sets2):
+    results = math.pi * 2. * nquad(function_input, [[0, int_bound], [-int_bound, int_bound]], args=(dMatrix, basis_sets, basis_sets1, basis_sets2))[0]
+    return results
+
+def num_electrons(function_input, dMatrix, basis_sets):
+    results = math.pi * 2. * nquad(function_input, [[0, int_bound], [-int_bound, int_bound]], args=(dMatrix, basis_sets))[0]
+    return results
+    
+    
+#A function to numerically integrate another function using cartesian coords
+#This is kind of hard coded Assumes Cinfinity symmetry We should be able to speed up but not really working
+#Input: two functions, i and j
+#Output: integral value
+def num_integrate(intFunction, dMatrix, basis_sets, basis_1, basis_2, bond_length):
+    #Must have an odd number of grid_points
+    grid_points = 50
+    box_size = 4.0 #Box size in angstroms
+    x_points = np.linspace(-box_size, box_size, num=((grid_points + 1)))
+    dx = x_points[1] - x_points[0]
+    dt = 0
+    z_points = [ x + (bond_length / 2.) for x in x_points]
+    x_points = [ x + dt for x in x_points] #Shifted so that x is in the middle of a box
+    x_points = [ x for x in x_points if x >= 0]
+    val = 0
+    x0 = 0
+    for x in x_points:
+        for z in z_points:
+            dV = math.pi * dx ** 2. * (x0 + dx)
+            val += intFunction(x, z, dMatrix, basis_sets, basis_1, basis_2) * dV 
+            x0 = x
+   
+    return val
 
 #A function to determine the two electron fock
 #Input: the density matrix and the repulsion matrix
@@ -251,7 +413,7 @@ def twoElectronFock(dMatrix, eeMatrix):
                 element_val = 0
                 for m in range(dMatrix.shape[0]):
                     for n in range(dMatrix.shape[1]):
-                        element_val += dMatrix[m][n] * (eeMatrix[i][j][m][n] - 0.5 * eeMatrix[i][n][j][m])
+                        element_val += dMatrix[m][n] * (eeMatrix[i][j][m][n])
 
                 gMatrix[i][j] = element_val
                             
@@ -265,23 +427,31 @@ def SCFLoop(basis_sets):
         coreHam  = coreHamiltonian(basis_sets)
 	fock = coreHam
 	oMatrix = orthonormalizationMatrix(overLap)
-	cMatrix = coeffMatrix(oMatrix, fock)
+	cMatrix = coeffMatrix(oMatrix, fock)[0]
 	dMatrix1 = densityMatrix(cMatrix, numElectrons)
         eeMatrix = electronElectronRepulsion(basis_sets)
 	gMatrix = twoElectronFock(dMatrix1, eeMatrix)
+        exCorr = ExCorrPMatrix(dMatrix1, basis_sets)
 	converge = False
 	numLoops = 0
 	while not converge: #Should be until consistent field
-		fock = coreHam + gMatrix
-		cMatrix = coeffMatrix(oMatrix, fock)
+		fock = coreHam + gMatrix + exCorr
+		cMatrix = coeffMatrix(oMatrix, fock)[0]
 		dMatrix2 = densityMatrix(cMatrix, numElectrons)
-		if (np.square(np.sum(np.subtract(dMatrix1, dMatrix2))) <= 0):
+                #print "Num Electrons"
+                #print num_electrons(density2, dMatrix2, basis_sets)
+                print "ddmatrix:", np.square(np.sum(np.subtract(dMatrix1, dMatrix2)))
+		if (np.square(np.sum(np.subtract(dMatrix1, dMatrix2))) <= (10. ** -6)):
 			converge = True
 		gMatrix = twoElectronFock(dMatrix2, eeMatrix)
+                exCorr = ExCorrPMatrix(dMatrix2, basis_sets)
 		dMatrix1 = dMatrix2
 		numLoops += 1
 		print numLoops
-	energy = 0.5 * np.sum(np.multiply(dMatrix1, (coreHam + coreHam + gMatrix)))
+	        #energy = 0.5 * np.sum(np.multiply(dMatrix1, (coreHam + coreHam + gMatrix + exCorr)))
+                #print "Energy:", energy
+
+	energy = dftEnergy(coeffMatrix(oMatrix, fock)[1], dMatrix1, basis_sets, eeMatrix)
 	
 	print "Electronic Energy"
 	print energy
@@ -351,6 +521,9 @@ def test():
 	print gMatrix
 	print "\n"
 	
+def test2():
+    print "This is test2\n"
+
 	
 #test()
 
