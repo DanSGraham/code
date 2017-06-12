@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AlfredAssistant</string>
+    <string name="text_string">This is the default text</string>
+    <string name="listen_button">Listen</string>
+</resources>
