@@ -107,8 +107,10 @@ class SingleLayerPerceptron(FFNeuralNetwork):
         self.num_neurons = self.num_outputs
         self.network_weights = np.random.uniform(-1, 1, 
             (self.num_neurons, self.num_inputs))
-        self.bias_weights = np.random.uniform(-1, 1, 
+        self.network_bias = np.random.uniform(-1, 1, 
             (self.num_neurons))
+        if not self.use_bias:
+            self.network_bias.fill(0.0)
 
     def calculate(self, input_stimulus):
 
@@ -117,7 +119,7 @@ class SingleLayerPerceptron(FFNeuralNetwork):
         self.activation_input = [
             np.multiply(self.slope_param, 
             self.network_weights.dot(input_stimulus))
-            + self.bias_weights
+            + self.network_bias
         ]
         self.data_layers.append(self.activation_function(self.last_output))
         return self.activated_values
@@ -137,7 +139,8 @@ class SingleLayerPerceptron(FFNeuralNetwork):
     def adjustment(self, weights_adjust, bias_adjust):
 
         self.network_weights = self.network_weights - weights_adjust
-        self.bias_weights = self.bias_weights - bias_adjust
+        if self.use_bias:
+            self.bias_weights = self.bias_weights - bias_adjust
 
     def export_network(self):
         
@@ -151,41 +154,31 @@ class MultiLayerPerceptron(FFNeuralNetwork):
     def __init__(self, input_data):
 
         super(MultiLayerPerceptron, self).__init__(input_data)
-        self.size_init_layer = self.properties["sizeInitialLayer"]
         self.num_hidden_layers = self.properties["numberHiddenLayers"]
         self.hidden_layer_sizes = self.properties["hiddenLayerSizes"]
         self.num_output_neurons = self.properties["numberOutputs"]
-        self.normalize_input = self.properties["normalizeInputs"]
         self.network_weights = []
         self.network_bias = []
 
-        if self.normalize_input:
-            self.network_weights.append(
-                np.random.uniform(-1, 1, (self.num_inputs)))
-            self.network_bias.append(
-                np.random.uniform(-1, 1, (self.num_inputs)))
-
-        #Create Input Layer:
         self.network_weights.append(
-            np.random.uniform(-1, 1, (self.size_init_layer, self.num_inputs)))
+            np.random.uniform(-1, 1, (self.num_inputs, 1)))
         self.network_bias.append(
-            np.random.uniform(-1, 1, (self.size_init_layer)))
+            np.random.uniform(-1, 1, (self.num_inputs, 1)))
 
-        temp_inputs = self.size_init_layer
+        temp_inputs = self.num_inputs
         for i in range(self.num_hidden_layers):
             layer_size = self.hidden_layer_sizes[i]
             self.network_weights.append(
                 np.random.uniform(-1, 1, (layer_size, temp_inputs)))
             self.network_bias.append(
-                np.random.uniform(-1, 1, (layer_size)))
+                np.random.uniform(-1, 1, (layer_size, 1)))
             temp_inputs = layer_size
 
         #Create output layer:
         self.network_weights.append(
             np.random.uniform(-1, 1, (self.num_output_neurons, temp_inputs)))
         self.network_bias.append(
-            np.random.uniform(-1, 1, (self.num_output_neurons)))
-
+            np.random.uniform(-1, 1, (self.num_output_neurons, 1)))
         if not self.use_bias:
             for bias_layer in self.network_bias:
                 bias_layer.fill(0.0)
@@ -196,15 +189,12 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         self.data_layers = [input_values]
         self.activation_input = []
 
-        iter_val = range(len(self.network_weights))
-        if self.normalize_input:
-            self.activation_input.append(
-                np.multiply(self.slope_param, np.multiply(self.data_layers[-1],
-                self.network_weights[0]) + self.network_bias[0]))
-            self.data_layers.append(
-                self.activation_function(self.activation_input[-1]))
-            iter_val = range(1,len(self.network_weights)) 
-
+        self.activation_input.append(
+            np.multiply(self.slope_param, np.multiply(self.data_layers[-1],
+            self.network_weights[0]) + self.network_bias[0]))
+        self.data_layers.append(
+            self.activation_function(self.activation_input[-1]))
+        iter_val = range(1,len(self.network_weights)) 
         for i in iter_val:
             self.activation_input.append(
                 np.multiply(self.slope_param, 
@@ -212,7 +202,7 @@ class MultiLayerPerceptron(FFNeuralNetwork):
                 + self.network_bias[i]))
             self.data_layers.append(
                 self.activation_function(self.activation_input[-1]))
-        
+
         return self.data_layers[-1] 
 
     def correction(self, target_values):
@@ -227,12 +217,10 @@ class MultiLayerPerceptron(FFNeuralNetwork):
                 self.cost_function(self.data_layers[-1], target_values),
                 self.d_activation_function(
                     self.activation_input[-1], self.slope_param)))
-        
-       #Need to calculate the weight error outside in the train function 
+        #Need to calculate the weight error outside in the train function 
+        #CHECK THIS JUST ADJUSTED
         self.weights_error.append(
-            np.multiply(np.array([self.error_list[-1]]).T, 
-            np.array([self.data_layers[-2]])))
-
+            np.multiply(self.error_list[-1], self.data_layers[-2]).T)
         for i in range((len(self.network_weights)-2), -1, -1):
             self.error_list.append(
                 np.multiply(np.dot(self.network_weights[i + 1].T, 
@@ -240,12 +228,13 @@ class MultiLayerPerceptron(FFNeuralNetwork):
                 self.d_activation_function(self.activation_input[i], 
                 self.slope_param)))
             self.weights_error.append(
-                np.multiply(np.array([self.error_list[-1]]).T, 
-                np.array([self.data_layers[i]])))
+                np.multiply(self.error_list[-1], self.data_layers[i]))
 
         #Multiply by the correct adjustment and return
         self.error_list = list(reversed(self.error_list))
         self.weights_error = list(reversed(self.weights_error))
+        #print self.error_list
+        #print self.weights_error
         square_sum_error = np.divide(
             np.sum(np.square(self.data_layers[-1] - target_values)), 
             len(target_values))
@@ -257,8 +246,9 @@ class MultiLayerPerceptron(FFNeuralNetwork):
         for i in range(len(self.network_weights)):
             self.network_weights[i] = np.subtract(self.network_weights[i], 
                 weights_adjust[i])
-            self.network_bias[i] = np.subtract(self.network_bias[i], 
-                bias_adjust[i])
+            if self.use_bias:
+                self.network_bias[i] = np.subtract(self.network_bias[i], 
+                    bias_adjust[i])
 
 
 class RNeuralNetwork(NeuralNetwork):

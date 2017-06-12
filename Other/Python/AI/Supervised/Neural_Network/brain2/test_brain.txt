@@ -1,0 +1,30 @@
+{
+    "_comment": "input file for creating a new NN",
+    "networkClass":"Recurrant",
+    "networkType": "RMLPercep",
+    "networkProperties" : {
+        "numberHiddenLayers" : 1,
+        "hiddenLayerSizes" : [100],
+        "inputSize" : 2,
+        "outputSize" : 2,
+        "inputLayer" : {
+            "activationFunction" : "Linear"
+        },
+        "hiddenLayers" : {
+            "activationFunctions" : ["Sigmoid"]
+        },
+        "outputLayer" : {
+            "activationFunction" : "Linear"
+        },
+        "costFunction": "Quadratic"
+    },
+    "trainingMethod": "Batch",
+    "trainingProperties": {
+        "trainingFactor": 0.03,
+        "batchSize": 15,
+        "maxEpochs": 100,
+        "gradientMethod": "Momentum",
+        "momentumFactor": 0.9
+    },
+    "trainingSet": ["train_set1.txt"]
+}

@@ -4,18 +4,17 @@
     "networkType": "MLPercep",
     "networkProperties" : {
         "costFunction": "Quadratic",
-        "normalizeInputs" : false,
-        "sizeInitialLayer" : 1,
         "numberHiddenLayers": 1,
-        "hiddenLayerSizes": [10],
+        "hiddenLayerSizes": [3],
         "numberInputs" : 1,
-        "numberOutputs" : 1
+        "numberOutputs" : 1,
+        "useBias": false
     },
     "trainingMethod": "Stochastic",
     "trainingProperties": {
         "trainingFactor": 0.03,
         "batchSize": 1,
-        "maxEpochs": 10,
+        "maxEpochs": 50,
         "gradientMethod": "Momentum",
         "momentumFactor": 0.9
     },

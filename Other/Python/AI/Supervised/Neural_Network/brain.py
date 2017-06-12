@@ -159,7 +159,8 @@ def batch_train(brain, input_set, output_set, batch_size, train_factor, epochs=1
         for j in range(batch_size):
             network_output = network.calculate(input_set[i + j])
             w_err_tmp, b_err_tmp, MSE = network.correction(output_set[i + j])
-
+            #print weights_error
+            #print w_err_tmp
             for n in range(len(weights_error)):
                 weights_error[n] += w_err_tmp[n]
                 bias_error[n] += b_err_tmp[n]
@@ -313,7 +314,6 @@ def compareBrains(data_dict):
     #Build pybrain
     compare_brain = buildNetwork(1, data_dict["networkProperties"]["hiddenLayerSizes"][0], 1, bias=True)
     print compare_brain.activate([in_data])
-    print compare_brain["in"]
     #Build Dataset
     ds = SupervisedDataSet(1,1)
     trainingFile = test_brain.trainingSet[0] 

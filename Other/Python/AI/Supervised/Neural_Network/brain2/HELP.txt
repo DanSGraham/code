@@ -1,0 +1,5 @@
+Choosing a learning parameter:
+    Usually between 1 and 0.0001. Start with 0.01 and see what works best.
+
+Choosing a momentum:
+    Between 1 and 0.00001. Start with 0.1 and adjust.

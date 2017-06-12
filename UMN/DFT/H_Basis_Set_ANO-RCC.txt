@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0099)https://bse.pnl.gov/bse/portal/user/anon/panel/Main/template/courier_content/js_peid/11535052407933 -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <!--<base href="https://bse.pnl.gov:443/bse/">--><base href=".">
+  	<title>Basis Set: ANO-RCC</title>
+    <link href="./H_Basis Set_ ANO-RCC_files/chef.css" type="text/css" rel="stylesheet" media="all">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <script type="text/javascript" language="JavaScript" src="./H_Basis Set_ ANO-RCC_files/headscripts.js">
+</script>
+  <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+.en-markup-crop-options {
+    top: 18px !important;
+    left: 50% !important;
+    margin-left: -100px !important;
+    width: 200px !important;
+    border: 2px rgba(255,255,255,.38) solid !important;
+    border-radius: 4px !important;
+}
+
+.en-markup-crop-options div div:first-of-type {
+    margin-left: 0px !important;
+}
+</style></head>
+  <body bgcolor="#ffffff" onload="updCourier(); setMainFrameHeight(&#39;Main11535052407933&#39;);setFocus(focus_path);">
+    
+	
+<style type="text/css">
+
+div.emslheading {
+    background-image: url("images/cmcs/yellowsep.gif");
+    background-repeat: repeat-x;
+    background-position: bottom;
+}
+
+</style>
+
+<div class="ActionHeading">
+  <div class="emslheading">
+   <img src="./H_Basis Set_ ANO-RCC_files/BaSE_logo_sm.jpg" border="0" align="bottom"> <font style="font-size:14pt; font-weight:bold">v1.2.2</font>
+   <br>
+   <br>
+  </div>
+</div>
+
+<pre style="font-family:Courier,fixed; margin-left:10px;">!  ANO-RCC  EMSL  Basis Set Exchange Library   4/22/17 5:40 PM
+! Elements                             References
+! --------                             ----------
+! H He: P.-O. Widmark, P.-Å. Malmqvist, and B. O. Roos, Density-matrix averaged atomic natural orbital (ANO) basis-sets for correlated molecular wave-functions 1: 1st row atoms., Theor. Chim. Acta 77, 291-306 (1990).
+! Li Be Na Mg K Ca Rb Sr Cs Ba Fr Ra: O. Roos, V. Veryazov and P.-O. Widmark, Relativistic atomic natural orbital type basis sets for the alkaline and alkaline-earth atoms applied to the ground-state potentials for the corresponding dimers., Theor. Chem. Acc. 111, 345-351 (2003).
+! B C N O F Ne Al Si P S Cl Ar Ga Ge As Se Br Kr In Sn Sb Te I Xe Tl Pb Bi Po At Rn: B. O. Roos, R. Lindh, P.-Å. Malmqvist, V. Veryazov, and P.-O. Widmark, Main group atoms and dimers studied with a new relativistic ANO basis set, J. Phys. Chem. A 108, 2851 (2005).
+! Sc Ti V Cr Mn Fe Co Ni Cu Zn Y Zr Nb Mo Tc Ru Rh Pd Ag Cd Hf Ta W Re Os Ir Pt Au Hg: . O. Roos, R. Lindh and P.-Å. Malmqvist, V. Veryazov and P.-O. Widmark, New relativistic ANO basis sets for transition metal atoms, J. Phys. Chem. A 109, 6575-6579 (2005).
+! Ac Th Pa U Np Pu Am Cm: B.O. Roos, R. Lindh, P.-Å. Malmqvist, V. Veryazov, and P.-O. Widmark, New relativistic ANO basis sets for actinide atoms, Chem. Phys. Letters 409, 295-299 (2005).
+! La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu: B. O. Roos, R. Lindh, P.-Å. Malmqvist, V. Veryazov, and P.-O. Widmark, New Relativistic atomic natural orbital basis sets for lanthanide atoms with applications to the Ce diatomic abd LuF3, Phys. Chem. A 112, 11431-11435 (2008).
+! 
+
+
+
+basis={
+!
+! HYDROGEN       (8s,4p,3d,1f) -&gt; [6s,4p,3d,1f]
+! HYDROGEN       (8s,4p,3d,1f) -&gt; [6s,4p,3d,1f]
+s, H , 188.6144500000, 28.2765960000, 6.4248300000, 1.8150410000, 0.5910630000, 0.2121490000, 0.0798910000, 0.0279620000
+c, 1.8, 0.00096385, 0.00749196, 0.03759541, 0.14339498, 0.34863630, 0.43829736, 0.16510661, 0.02102287
+c, 1.8, -0.0013119, -0.0103451, -0.0504953, -0.2073855, -0.4350885, -0.0247297, 0.32252599, 0.70727538
+c, 1.8, 0.00242240, 0.02033817, 0.08963935, 0.44229071, 0.57571439, -0.9802890, -0.6721538, 1.1417685
+c, 1.8, -0.0115701, -0.0837154, -0.4451663, -1.1462710, 2.5031871, -1.5828490, 0.03096569, 0.30862864
+c, 1.8, 0.01478099, 0.09403187, 0.53618016, -0.6089639, -1.1148890, 3.4820812, -3.7625390, 1.6766932
+c, 1.8, -0.0212892, -0.1095596, -1.4818260, 3.0272963, -3.7630860, 3.6574131, -2.5012370, 0.89405394
+p, H , 2.3050000000, 0.8067500000, 0.2823620000, 0.0988270000
+c, 1.4, 0.11279019, 0.41850753, 0.47000773, 0.18262603
+c, 1.4, -0.2108688, -0.5943796, 0.08968888, 0.86116340
+c, 1.4, 0.75995011, 0.16461590, -1.3710140, 1.0593155
+c, 1.4, -1.4427420, 2.3489914, -1.9911520, 0.90505601
+d, H , 1.8190000000, 0.7276000000, 0.2910400000
+c, 1.3, 0.27051341, 0.55101250, 0.33108664
+c, 1.3, -0.7938035, -0.0914252, 0.86200334
+c, 1.3, 1.3082770, -2.0210590, 1.2498888
+f, H , 0.9701090000
+c, 1.1, 1
+}
+
+
+</pre>
+
+
+<script language="JavaScript">
+document.title = "Basis Set: ANO-RCC" ;
+</script>
+
+
+
+  
+
+</body></html>
