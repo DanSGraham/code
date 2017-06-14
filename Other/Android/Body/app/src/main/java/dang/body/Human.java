@@ -5,7 +5,7 @@ package dang.body;
  */
 
 public class Human {
-    Food myFood;
+    Nutrients myNutrients;
     Sleep mySleep;
     Exercise myExercise;
 
@@ -21,7 +21,7 @@ public class Human {
          *
          *  Week starts on Sunday.
          */
-        this.nutrientArray = new Food[10];
+        this.myNutrients = new Food[10];
         this.mySleep = new Sleep();
 
         /** Arrays formatted:

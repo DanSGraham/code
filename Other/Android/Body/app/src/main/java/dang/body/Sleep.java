@@ -1,79 +1,63 @@
 package dang.body;
 
+import android.support.v4.util.CircularArray;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Daniel on 6/12/2017.
+ * TODO: Add Sleep this week so far, and Sleep this Month so far.
  */
 
 public class Sleep {
-    ArrayList<Double> sleepHours;
+    double daySleep;
+    MovingAverageArray weekMA, monthMA, threeMonthMA, sixMonthMA, nineMonthMA, yearMA;
+    long lastUpdated;
 
-    public Sleep(){
-        this.sleepHours = new ArrayList<Double>();
+    public Sleep() {
+        this.daySleep = 0.0;
+        this.weekMA = new MovingAverageArray(7);
+        this.monthMA = new MovingAverageArray(30);
+        this.threeMonthMA = new MovingAverageArray(91);
+        this.sixMonthMA = new MovingAverageArray(182);
+        this.nineMonthMA = new MovingAverageArray(273);
+        this.yearMA = new MovingAverageArray(365);
+        this.lastUpdated = -1;
     }
 
-    public void addSleep(double amntSleep){
-        this.sleepHours.add(amntSleep);
+    public void addSleep(double amntSleep) {
+        this.lastUpdated = TimeUnit.MILLISECONDS.toDays(Calendar.getInstance().getTimeInMillis());
+        this.daySleep = amntSleep;
+        this.weekMA.add(amntSleep);
+        this.monthMA.add(amntSleep);
+        this.threeMonthMA.add(amntSleep);
+        this.sixMonthMA.add(amntSleep);
+        this.nineMonthMA.add(amntSleep);
+        this.yearMA.add(amntSleep);
     }
 
-    public double getDay(int dayBack){
-        double rtnVal = 0;
-        if (dayBack < this.sleepHours.size()){
-            rtnVal = this.sleepHours.get(this.sleepHours.size() - 1 - dayBack);
+    public double[] getMovingAverages(){
+        double WMA, MMA, TMMA, SMMA, NMMA, YMA;
+        WMA = this.weekMA.calculateAverage();
+        MMA = this.monthMA.calculateAverage();
+        TMMA = this.threeMonthMA.calculateAverage();
+        SMMA = this.sixMonthMA.calculateAverage();
+        NMMA = this.nineMonthMA.calculateAverage();
+        YMA = this.yearMA.calculateAverage();
+        double[] rtnList = {WMA, MMA, TMMA, SMMA, NMMA, YMA};
+        return rtnList;
+    }
+
+    public double getDaySleep(){
+        double rtnVal = -1.0;
+        if(this.lastUpdated == TimeUnit.MILLISECONDS.toDays(Calendar.getInstance().getTimeInMillis())){
+            rtnVal = this.daySleep;
         }
         return rtnVal;
-    }
-
-    public double getLastNight(){
-        return getDay(0);
-    }
-
-    public double weekMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 7; i++){
-            sum += getDay(i);
-        }
-        return (sum / 7.0);
-    }
-
-    public double monthMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 30; i++){
-            sum += getDay(i);
-        }
-        return (sum / 30.0);
-    }
-
-    public double threeMonthMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 91; i++){
-            sum += getDay(i);
-        }
-        return (sum / 91.0);
-    }
-
-    public double sixMonthMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 183; i++){
-            sum += getDay(i);
-        }
-        return (sum / 183.0);
-    }
-
-    public double nineMonthMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 274; i++){
-            sum += getDay(i);
-        }
-        return (sum / 274.0);
-    }
-
-    public double twelveMonthMA(){
-        double sum = 0.0;
-        for(int i = 0; i < 365; i++){
-            sum += getDay(i);
-        }
-        return (sum / 365.0);
     }
 }
